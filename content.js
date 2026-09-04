@@ -46,7 +46,7 @@ window.SITE = {
       kanji: "診察室",
       romaji: "Shinsatsushitsu",
       title: "Research",
-      subtitle: "Exam room. Where measurements get taken.",
+      subtitle: "'In the lab' figuratively~",
       blocks: [
         { type: "entry",
           title: "Agentic evaluation pipeline for participant feedback",
@@ -155,20 +155,11 @@ window.SITE = {
       romaji: "Engawa",
       title: "Things I believe",
       subtitle: "Veranda. Sit for a while. Numbered so you can tell me which one is wrong.",
-      intro: "A running list, in no particular order, of things I currently believe about life and work. I am young and expect most of these to change; the point of writing them down is to be able to see the change. Inspired by the habit of keeping a public record of one's own thinking.",
+      intro: "This is my ivory tower. Replaced by LessWrong drafts soon.",
       beliefs: [
-        "The average is where harm goes to hide. Any time a number summarizes a population, ask which subgroup paid for it.",
-        "Excitement is a better compass than obligation. If I cannot find a version of a task I am excited by, I am probably doing the wrong task, or doing it for the wrong person.",
-        "A careful null result is worth more than a sloppy positive one, and it is much harder to get people to care about.",
-        "Reproduce before you extend. Most of what I have learned about machine learning came from trying to get someone else's numbers to match.",
-        "Writing is how I find out what I think. Reading is how I find out what other people think. Both are cheaper than being wrong for a year.",
-        "The boring part of a workflow is usually the part worth automating, and the interesting part is usually the part worth keeping human.",
-        "Being early in a career is a license to be broad. Depth is easier to add later than breadth.",
-        "Institutions respond to the metric, not the intent behind it. Design the metric as if it will be gamed, because it will be.",
-        "Kindness scales. Cleverness mostly does not.",
-        "Climb the mountain slowly. Kilimanjaro taught me that the people who turned back were almost always the ones who started fast.",
-        "Stories from another language carry things that do not survive translation. Learn the language anyway.",
-        "It is fine to not know what you want to be yet, as long as you keep building things and paying attention to which ones you miss when they end.",
+        "Guilt and gratitude are the main emotions we are guided by.",
+        "The only person you need to please is your past, present, and future.",
+        "We are biologically wired to survive, not thrive. Defy."
       ],
     },
 
@@ -184,8 +175,8 @@ window.SITE = {
         { type: "links" },
         { type: "h", text: "Currently reading" },
         { type: "list", items: [
-          "Veridical Data Science (Yu and Kumbier)",
-          "Yoko Ogawa, anything, again",
+          "Beautiful Country",
+          "Kagurabachi"
         ]},
       ],
     },

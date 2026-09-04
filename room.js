@@ -64,19 +64,20 @@
 
   const scene = $("#scene"), wrap = $(".scene-wrap");
 
-  /* ---------- fill mode: scale the painting to cover the stage ----------
-     Cover, but never crop more than ~20% past "contain", so the bookshelf
-     on the left and the volleyball corner on the right stay in frame. */
-  const IW = 2752, IH = 1536;
+  /* ---------- fill mode: painting covers the viewport ---------- */
+  const hotspots = document.querySelector(".hotspots");
   function fitScene() {
-    if (!document.body.classList.contains("fill")) { scene.style.width = ""; scene.style.height = ""; return; }
-    if (matchMedia("(max-width: 820px)").matches) { scene.style.width = ""; scene.style.height = ""; return; }
-    const W = wrap.clientWidth, H = wrap.clientHeight;
-    if (!W || !H) return;
-    const contain = Math.min(W / IW, H / IH), cover = Math.max(W / IW, H / IH);
-    const k = Math.min(cover, contain * 1.2);
-    scene.style.width = Math.round(IW * k) + "px";
-    scene.style.height = Math.round(IH * k) + "px";
+    const fill = document.body.classList.contains("fill");
+    const mobile = matchMedia("(max-width: 820px)").matches;
+    if (!fill || mobile) {
+      scene.style.width = "";
+      scene.style.height = "";
+      if (hotspots) hotspots.setAttribute("preserveAspectRatio", "none");
+      return;
+    }
+    scene.style.width = "100%";
+    scene.style.height = "100%";
+    if (hotspots) hotspots.setAttribute("preserveAspectRatio", "xMidYMid slice");
   }
   fitScene();
   window.addEventListener("resize", () => { fitScene(); if (current) zoomTo(current); });
@@ -106,33 +107,32 @@
   $("#help-toggle").addEventListener("click", () => setHelp(help.hidden));
   $("#help-close").addEventListener("click", () => setHelp(false));
 
-  /* ---------- zoom ---------- */
+  /* ---------- zoom (clamped so the painting never pans into empty space) ---------- */
   const panel = $("#panel");
-  const hotspots = document.querySelector(".hotspots");
-  const VB = hotspots && hotspots.viewBox.baseVal;
   function zoomTo(id) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) { inner.style.transform = ""; return; }
     if (matchMedia("(max-width: 820px)").matches) { inner.style.transform = ""; return; }
     const targets = [...document.querySelectorAll(`.hs[data-spot="${id}"]`)];
-    if (!targets.length || !VB) { inner.style.transform = ""; return; }
-    // Hotspot boxes in scene pixels, from SVG viewBox coords (stable while transformed)
+    if (!targets.length) { inner.style.transform = ""; return; }
+    inner.style.transform = "";
+    void inner.offsetWidth; // measure at rest, even when paging from another zoom
     const p = scene.getBoundingClientRect();
-    const sx = p.width / VB.width, sy = p.height / VB.height;
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     targets.forEach(t => {
-      const x = +t.getAttribute("x"), y = +t.getAttribute("y");
-      const w = +t.getAttribute("width"), h = +t.getAttribute("height");
-      x0 = Math.min(x0, x); y0 = Math.min(y0, y);
-      x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h);
+      const r = t.getBoundingClientRect();
+      x0 = Math.min(x0, r.left - p.left); y0 = Math.min(y0, r.top - p.top);
+      x1 = Math.max(x1, r.right - p.left); y1 = Math.max(y1, r.bottom - p.top);
     });
-    x0 *= sx; y0 *= sy; x1 *= sx; y1 *= sy;
     const w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
     const panelW = panel.classList.contains("open") ? panel.getBoundingClientRect().width : Math.min(560, window.innerWidth * 0.92);
     const free = window.innerWidth - panelW;
-    const s = Math.min(1.8, Math.max(1.1, Math.min(free * 0.6 / w, p.height * 0.7 / h)));
-    // center the focused object in the space left of the panel
-    const wrapRect = wrap.getBoundingClientRect(), sceneLeft = p.left - wrapRect.left, sceneTop = p.top - wrapRect.top;
-    const tx = (free / 2 - sceneLeft) - cx * s, ty = (wrapRect.height / 2 - sceneTop) - cy * s;
+    const wrapRect = wrap.getBoundingClientRect();
+    const sceneLeft = p.left - wrapRect.left, sceneTop = p.top - wrapRect.top;
+    const s = Math.min(1.8, Math.max(1.1, Math.min(free * 0.55 / w, p.height * 0.65 / h)));
+    let tx = (free / 2 - sceneLeft) - cx * s;
+    let ty = (wrapRect.height / 2 - sceneTop) - cy * s;
+    tx = Math.min(0, Math.max(p.width * (1 - s), tx));
+    ty = Math.min(0, Math.max(p.height * (1 - s), ty));
     inner.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
   }
   function unzoom() { inner.style.transform = ""; }
