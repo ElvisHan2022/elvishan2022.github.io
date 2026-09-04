@@ -7,7 +7,8 @@ Static site, no framework, no build step required. Deployed on GitHub Pages from
 - `books.js`: `window.BOOKS = { shelves: [{ id, label, kanji, items: [{ title, author?, kind?, reads: [{from, to?}], rereads, rating, review }] }] }` and `window.MOVIES = { items: [...] }`. An open-ended read (no `to`) means currently reading.
 - `index.html`: the room. `<img src="img/home.jpg">` (2752 × 1536) under an SVG with `viewBox="0 0 2000 1116"` holding `<rect class="hs" data-spot="<id>">` hotspots. `data-spot` must match an entry in `SPOTS` in `room.js`.
 - `room.js`: SPOTS list (order = directory order), hover labels, zoom-to-hotspot (CSS transform on `.scene-inner`), panel open/close, and the built-in views: bookshelf (spine grid from books.js), music (reads `window.MUSIC` if a music.js exists), movies, outdoor placeholder, now.
-- `room.css`: room-specific styles, loaded after style.css.
+- `room.css`: room-specific styles, loaded after style.css. `.fill` on `<body>` switches between full-bleed (painting covers the window, chrome floats) and framed. Fill mode sizes `.scene` from `fitScene()` in room.js.
+- Type: `--f-display` / `--f-body` / `--f-mono` set families; `--f-label` / `--label-case` / `--label-track` set the voice of all small label type (mono+uppercase+tracking = terminal look). Never hardcode a font-family in a component.
 - `posts.js`: `window.POSTS = { items: [{title, where, date, url, summary}], feeds: [{label, url}] }`. Rendered by the `writing` spot, sorted newest first.
 - `render.js`: shared `R.el`, `R.renderBlocks`, `R.linksList`, `R.clock`, `R.colophon`.
 - `map.html` + `app.js`: the floorplan (viewBox 1200 × 800), self-contained.

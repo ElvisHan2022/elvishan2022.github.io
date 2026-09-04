@@ -100,6 +100,12 @@ Why a manual list rather than a live feed: GitHub Pages serves static files only
 | The help card text | `index.html` | `<aside class="help">` |
 | Fonts and the overall palette | `style.css` | the `:root` block |
 
+## Full-bleed vs framed
+
+`index.html` line 13 is `<body class="room-page fill">`. With `fill`, the painting covers the whole window and the directory, status, and help card float over it. Delete the word `fill` and the painting returns to a framed box on a dark wall. Nothing else changes.
+
+In fill mode the painting is scaled to cover the window but never cropped more than 20% past "fit", so the bookshelf and the volleyball corner always stay visible. That limit is the `contain * 1.2` line in `fitScene()` in `room.js`.
+
 ## Fonts
 
 All type is controlled from one block at the top of `style.css`: an `@import` line that downloads the fonts, and three variables that assign them.
@@ -108,7 +114,10 @@ All type is controlled from one block at the top of `style.css`: an `@import` li
 |---|---|
 | `--f-display` | the kanji and the big title, book titles, project titles, post titles |
 | `--f-body` | ordinary paragraphs and list items |
-| `--f-mono` | the subtitle under the title, the small red section headings, dates, venues, tags, link labels |
+| `--f-mono` | genuinely monospaced things, mainly the clock |
+| `--f-label` | the subtitle under the title, the small red section headings, buttons, dates, venues, tags, link labels |
+
+Three more variables control the *character* of that small type rather than its family: `--f-label`, `--label-case`, and `--label-track`. Monospace plus uppercase plus wide letter-spacing is the "terminal HUD" look. Setting `--f-label: var(--f-body)`, `--label-case: none`, `--label-track: .02em` turns every label editorial in one edit.
 
 Three ready alternatives are written out as comments in that block: sharper and editorial (Zen Old Mincho, Newsreader, JetBrains Mono), warmer with hand-written headings (Klee One, Lora), and modern sans (Zen Kaku Gothic New, Public Sans). Paste one set over the `@import` line and the three variables, commit, done.
 

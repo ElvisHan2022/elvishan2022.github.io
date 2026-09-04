@@ -36,6 +36,12 @@
       --f-body: "Public Sans", system-ui, sans-serif;
       --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 
+   E. Editorial labels (kills the terminal/HUD feel)
+      keep any @import above, then set:
+      --f-label: var(--f-body);
+      --label-case: none;
+      --label-track: .02em;
+
    Keep a Japanese-capable face in --f-display: the kanji labels
    (部屋, 本棚, 時) fall back to a system font without one.
    Body text size lives in `.panel-body` further down this file.
@@ -89,6 +95,16 @@
   --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
   --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* LABEL VOICE — small type: buttons, section headings, dates, venues, tags.
+     Monospace + uppercase + wide tracking is the "terminal HUD" look.
+     Set these three to change that character everywhere at once.
+     Terminal (current):  var(--f-mono) / uppercase / .1em
+     Editorial:           var(--f-body)  / none     / .02em
+     Quiet sans:          system-ui      / none     / .01em  */
+  --f-label: var(--f-mono);
+  --label-case: uppercase;
+  --label-track: .1em;
+
   --panel-w: min(560px, 92vw);
   --ease: cubic-bezier(.2,.7,.2,1);
 }
@@ -112,7 +128,7 @@ button { font: inherit; cursor: pointer; }
 .strip {
   display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
   padding: 14px 22px 10px;
-  font-family: var(--f-mono); font-size: 12px; letter-spacing: .04em;
+  font-family: var(--f-label); font-size: 12px; letter-spacing: .04em;
   color: var(--label);
   border-bottom: 1px solid rgba(185,192,211,.15);
 }
@@ -172,7 +188,7 @@ button { font: inherit; cursor: pointer; }
 }
 .dir-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
 .dir-kanji { font-family: var(--f-display); color: var(--gold); font-size: 18px; }
-.dir-title { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--label-dim); }
+.dir-title { font-family: var(--f-label); font-size: 11px; letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--label-dim); }
 .dir-list { list-style: none; margin: 0; padding: 0; }
 .dir-list li { border-top: 1px solid rgba(185,192,211,.12); }
 .dir-list button {
@@ -183,19 +199,19 @@ button { font: inherit; cursor: pointer; }
 .dir-list button:hover, .dir-list button.active { color: var(--paper); }
 .dir-list .k { font-family: var(--f-display); font-size: 15px; color: var(--paper); }
 .dir-list .t { font-size: 15px; }
-.dir-list .n { font-family: var(--f-mono); font-size: 10px; color: var(--label-dim); letter-spacing: .1em; }
+.dir-list .n { font-family: var(--f-label); font-size: 11px; color: var(--label-dim); letter-spacing: var(--label-track); }
 .dir-list button.active .n { color: var(--gold); }
-.dir-hint { font-family: var(--f-mono); font-size: 10.5px; color: var(--label-dim); margin: 10px 0 0; letter-spacing: .03em; }
+.dir-hint { font-family: var(--f-label); font-size: 11.5px; color: var(--label-dim); margin: 10px 0 0; letter-spacing: .03em; }
 
 /* ---------- status ---------- */
 .status {
   position: absolute; left: 22px; bottom: 22px; z-index: 3;
-  font-family: var(--f-mono); font-size: 11px; letter-spacing: .04em;
+  font-family: var(--f-label); font-size: 11px; letter-spacing: .04em;
   background: rgba(15,22,40,.82); border: 1px solid rgba(185,192,211,.22);
   padding: 10px 14px; min-width: 200px; backdrop-filter: blur(6px);
 }
 .status-row { display: flex; justify-content: space-between; gap: 18px; padding: 3px 0; }
-.status .k { color: var(--label-dim); text-transform: uppercase; letter-spacing: .1em; font-size: 10px; }
+.status .k { color: var(--label-dim); text-transform: var(--label-case); letter-spacing: var(--label-track); font-size: 11px; }
 .status .v { color: var(--paper); font-variant-numeric: tabular-nums; }
 
 /* ---------- shoji panel ---------- */
@@ -238,7 +254,7 @@ button { font: inherit; cursor: pointer; }
   letter-spacing: .04em; padding-top: 2px;
 }
 .panel-title { font-family: var(--f-display); font-size: 26px; margin: 0 0 4px; font-weight: 500; color: var(--ink); text-wrap: balance; line-height: 1.2; }
-.panel-sub { margin: 0; font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-soft); letter-spacing: .03em; }
+.panel-sub { margin: 0; font-family: var(--f-label); font-size: 12px; color: var(--ink-soft); letter-spacing: .03em; }
 .panel-close {
   background: none; border: 1px solid var(--paper-line); color: var(--ink-soft);
   width: 34px; height: 34px; border-radius: 50%; font-size: 20px; line-height: 1;
@@ -251,7 +267,7 @@ button { font: inherit; cursor: pointer; }
 }
 .panel-body p { margin: 0 0 14px; max-width: 62ch; }
 .panel-body h3 {
-  font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  font-family: var(--f-label); font-size: 11.5px; letter-spacing: var(--label-track); text-transform: var(--label-case);
   color: var(--seal); margin: 26px 0 10px; font-weight: 500;
 }
 .panel-body ul { margin: 0 0 14px; padding-left: 20px; }
@@ -260,28 +276,28 @@ button { font: inherit; cursor: pointer; }
 .entry { padding: 14px 0; border-top: 1px solid var(--paper-line); }
 .entry:first-child { border-top: 0; padding-top: 0; }
 .entry h4 { font-family: var(--f-display); font-weight: 500; font-size: 18px; margin: 0 0 2px; color: var(--ink); line-height: 1.3; }
-.entry .meta { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); margin: 0 0 8px; letter-spacing: .02em; }
+.entry .meta { font-family: var(--f-label); font-size: 11.5px; color: var(--ink-soft); margin: 0 0 8px; letter-spacing: .02em; }
 .entry p { margin: 0 0 8px; }
-.entry a.more { font-family: var(--f-mono); font-size: 11.5px; color: var(--seal); text-decoration: none; border-bottom: 1px solid currentColor; }
+.entry a.more { font-family: var(--f-label); font-size: 12px; color: var(--seal); text-decoration: none; border-bottom: 1px solid currentColor; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .tags span {
-  font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .04em;
-  border: 1px solid var(--paper-line); padding: 2px 8px; color: var(--ink-soft); background: var(--paper);
+  font-family: var(--f-label); font-size: 11px; letter-spacing: .04em;
+  border: 1px solid var(--paper-line); padding: 3px 8px; color: var(--ink-soft); background: var(--paper);
 }
 
 .pub { padding: 12px 0; border-top: 1px solid var(--paper-line); display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; }
 .pub:first-of-type { border-top: 0; }
 .pub h4 { grid-column: 1; font-family: var(--f-display); font-weight: 500; font-size: 17px; margin: 0; color: var(--ink); line-height: 1.3; }
-.pub .venue { grid-column: 1; font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); }
+.pub .venue { grid-column: 1; font-family: var(--f-label); font-size: 11.5px; color: var(--ink-soft); }
 .pub .status {
   grid-column: 2; grid-row: 1 / span 2; align-self: start;
   position: static; min-width: 0; padding: 4px 8px; background: var(--ink); color: var(--paper);
-  font-family: var(--f-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; border: 0; backdrop-filter: none; white-space: nowrap;
+  font-family: var(--f-label); font-size: 11px; letter-spacing: var(--label-track); text-transform: var(--label-case); border: 0; backdrop-filter: none; white-space: nowrap;
 }
 .pub .status.sub { background: var(--indigo-2); }
 .pub .status.prep { background: transparent; color: var(--ink-soft); border: 1px solid var(--paper-line); }
 .pub p { grid-column: 1 / -1; margin: 4px 0 0; font-size: 15px; }
-.pub a.more { grid-column: 1 / -1; font-family: var(--f-mono); font-size: 11px; color: var(--seal); text-decoration: none; }
+.pub a.more { grid-column: 1 / -1; font-family: var(--f-label); font-size: 11.5px; color: var(--seal); text-decoration: none; }
 
 .beliefs { list-style: none; margin: 0; padding: 0; counter-reset: b; }
 .beliefs li {
@@ -292,12 +308,12 @@ button { font: inherit; cursor: pointer; }
 .beliefs li::before {
   content: counter(b, decimal-leading-zero);
   position: absolute; left: 0; top: 14px;
-  font-family: var(--f-mono); font-size: 11px; color: var(--seal); letter-spacing: .06em;
+  font-family: var(--f-label); font-size: 11.5px; color: var(--seal); letter-spacing: .06em;
 }
 .intro { font-style: italic; color: var(--ink-soft); }
 
 .links { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 6px; }
-.links a { font-family: var(--f-mono); font-size: 13px; color: var(--ink); text-decoration: none; display: inline-flex; gap: 10px; }
+.links a { font-family: var(--f-label); font-size: 13.5px; color: var(--ink); text-decoration: none; display: inline-flex; gap: 10px; }
 .links a .k { color: var(--seal); width: 70px; }
 .links a:hover { text-decoration: underline; }
 
@@ -305,7 +321,7 @@ button { font: inherit; cursor: pointer; }
   display: flex; justify-content: space-between; padding: 12px 26px 16px 30px;
   border-top: 1px solid var(--paper-line); background: var(--paper);
 }
-.pager { background: none; border: 0; font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-soft); letter-spacing: .04em; padding: 4px 0; }
+.pager { background: none; border: 0; font-family: var(--f-label); font-size: 12px; color: var(--ink-soft); letter-spacing: .04em; padding: 4px 0; }
 .pager:hover { color: var(--seal); }
 
 /* seal stamp in panel corner */
@@ -322,7 +338,7 @@ button { font: inherit; cursor: pointer; }
 .stack { display: none; }
 .colophon {
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  padding: 14px 22px 22px; font-family: var(--f-mono); font-size: 11px; color: var(--label-dim); letter-spacing: .03em;
+  padding: 14px 22px 22px; font-family: var(--f-label); font-size: 11.5px; color: var(--label-dim); letter-spacing: .03em;
   border-top: 1px solid rgba(185,192,211,.15);
 }
 .colophon a { color: var(--label); text-decoration: none; margin-left: 12px; }

@@ -68,6 +68,25 @@
 
   const scene = $("#scene"), wrap = $(".scene-wrap");
 
+  /* ---------- fill mode: scale the painting to cover the stage ----------
+     Cover, but never crop more than ~20% past "contain", so the bookshelf
+     on the left and the volleyball corner on the right stay in frame. */
+  const IW = 2752, IH = 1536;
+  function fitScene() {
+    if (!document.body.classList.contains("fill")) { scene.style.width = ""; scene.style.height = ""; return; }
+    if (matchMedia("(max-width: 820px)").matches) { scene.style.width = ""; scene.style.height = ""; return; }
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    if (!W || !H) return;
+    const contain = Math.min(W / IW, H / IH), cover = Math.max(W / IW, H / IH);
+    const k = Math.min(cover, contain * 1.2);
+    scene.style.width = Math.round(IW * k) + "px";
+    scene.style.height = Math.round(IH * k) + "px";
+  }
+  fitScene();
+  window.addEventListener("resize", () => { fitScene(); if (current) zoomTo(current); });
+  const sceneImg = document.querySelector(".scene-img");
+  if (sceneImg && !sceneImg.complete) sceneImg.addEventListener("load", fitScene, { once: true });
+
   /* ---------- directory + help toggles ---------- */
   const help = $("#help"), revealBtn = $("#reveal-toggle");
   const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -147,7 +166,6 @@
   });
   $("#pager-prev").addEventListener("click", () => open(order[(order.indexOf(current) - 1 + order.length) % order.length]));
   $("#pager-next").addEventListener("click", () => open(order[(order.indexOf(current) + 1) % order.length]));
-  window.addEventListener("resize", () => { if (current) zoomTo(current); });
 
   /* ---------- what each object shows ---------- */
   function renderSpot(s) {
