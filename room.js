@@ -107,18 +107,28 @@
   $("#help-close").addEventListener("click", () => setHelp(false));
 
   /* ---------- zoom ---------- */
+  const panel = $("#panel");
+  const hotspots = document.querySelector(".hotspots");
+  const VB = hotspots && hotspots.viewBox.baseVal;
   function zoomTo(id) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) { inner.style.transform = ""; return; }
     if (matchMedia("(max-width: 820px)").matches) { inner.style.transform = ""; return; }
     const targets = [...document.querySelectorAll(`.hs[data-spot="${id}"]`)];
-    if (!targets.length) { inner.style.transform = ""; return; }
-    // union of target boxes in scene pixels
+    if (!targets.length || !VB) { inner.style.transform = ""; return; }
+    // Hotspot boxes in scene pixels, from SVG viewBox coords (stable while transformed)
     const p = scene.getBoundingClientRect();
-    inner.style.transform = ""; // measure at rest
+    const sx = p.width / VB.width, sy = p.height / VB.height;
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
-    targets.forEach(t => { const r = t.getBoundingClientRect(); x0 = Math.min(x0, r.left - p.left); y0 = Math.min(y0, r.top - p.top); x1 = Math.max(x1, r.right - p.left); y1 = Math.max(y1, r.bottom - p.top); });
+    targets.forEach(t => {
+      const x = +t.getAttribute("x"), y = +t.getAttribute("y");
+      const w = +t.getAttribute("width"), h = +t.getAttribute("height");
+      x0 = Math.min(x0, x); y0 = Math.min(y0, y);
+      x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h);
+    });
+    x0 *= sx; y0 *= sy; x1 *= sx; y1 *= sy;
     const w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    const panelW = Math.min(560, window.innerWidth * 0.92), free = window.innerWidth - panelW;
+    const panelW = panel.classList.contains("open") ? panel.getBoundingClientRect().width : Math.min(560, window.innerWidth * 0.92);
+    const free = window.innerWidth - panelW;
     const s = Math.min(1.8, Math.max(1.1, Math.min(free * 0.6 / w, p.height * 0.7 / h)));
     // center the focused object in the space left of the panel
     const wrapRect = wrap.getBoundingClientRect(), sceneLeft = p.left - wrapRect.left, sceneTop = p.top - wrapRect.top;
@@ -128,7 +138,7 @@
   function unzoom() { inner.style.transform = ""; }
 
   /* ---------- panel ---------- */
-  const panel = $("#panel"), scrim = $("#scrim");
+  const scrim = $("#scrim");
   let current = null, lastTrigger = null;
   function setActive(id) {
     document.querySelectorAll(".hs").forEach(h => h.classList.toggle("active", h.dataset.spot === id));

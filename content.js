@@ -6,7 +6,7 @@
 
 window.SITE = {
   name: "Elvis Han",
-  tagline: "Health data science, machine learning, and the question of who a model works for.",
+  tagline: "Health Data Science @ UCSF | Prev @ FDA, JPMorganChase",
   location: "San Francisco",
   links: {
     email: "elvis.han@ucsf.edu",
