@@ -114,8 +114,11 @@
     if (matchMedia("(max-width: 820px)").matches) { inner.style.transform = ""; return; }
     const targets = [...document.querySelectorAll(`.hs[data-spot="${id}"]`)];
     if (!targets.length) { inner.style.transform = ""; return; }
+    // Snap to rest instantly before measuring; the CSS transition would otherwise
+    // leave hotspots mid-flight when paging between open panels.
+    inner.classList.add("no-transition");
     inner.style.transform = "";
-    void inner.offsetWidth; // measure at rest, even when paging from another zoom
+    void inner.offsetWidth;
     const p = scene.getBoundingClientRect();
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     targets.forEach(t => {
@@ -133,7 +136,10 @@
     let ty = (wrapRect.height / 2 - sceneTop) - cy * s;
     tx = Math.min(0, Math.max(p.width * (1 - s), tx));
     ty = Math.min(0, Math.max(p.height * (1 - s), ty));
-    inner.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    inner.classList.remove("no-transition");
+    requestAnimationFrame(() => {
+      inner.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    });
   }
   function unzoom() { inner.style.transform = ""; }
 
