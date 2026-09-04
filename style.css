@@ -1,7 +1,48 @@
 /* =========================================================
-   style.css — the night clinic
-   One committed visual world: aizome indigo night, washi paper panels.
+   style.css — shared palette, type, and the sliding panel.
    ========================================================= */
+
+/* ---------------------------------------------------------
+   FONTS. Everything about type is in this one block.
+   To change the fonts: swap the @import line and the three
+   --f-* variables for one of the alternatives below, save,
+   commit. Nothing else needs editing.
+
+   Which font shows up where, inside a panel:
+     --f-display  the kanji and the big title ("時  Now"),
+                  book titles, project titles, post titles
+     --f-body     ordinary paragraphs and list items
+     --f-mono     the subtitle under the title ("The clock."),
+                  the small red section headings (READING RIGHT
+                  NOW), dates, venues, tags, and link labels
+
+   ALTERNATIVES — paste one set over the two marked lines.
+
+   B. Sharper and more editorial
+      @import url("https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap");
+      --f-display: "Zen Old Mincho", Georgia, serif;
+      --f-body: "Newsreader", Georgia, serif;
+      --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+   C. Warmer, headings look hand-written
+      @import url("https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap");
+      --f-display: "Klee One", Georgia, serif;
+      --f-body: "Lora", Georgia, serif;
+      --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+   D. Modern sans, no serifs anywhere
+      @import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap");
+      --f-display: "Zen Kaku Gothic New", system-ui, sans-serif;
+      --f-body: "Public Sans", system-ui, sans-serif;
+      --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+   Keep a Japanese-capable face in --f-display: the kanji labels
+   (部屋, 本棚, 時) fall back to a system font without one.
+   Body text size lives in `.panel-body` further down this file.
+   --------------------------------------------------------- */
+
+/* A. Current: literary, warm  ← the @import line */
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap");
 
 :root {
   /* palette */
@@ -43,7 +84,7 @@
   --maple-3: #d2603f;
   --bark: #4a3223;
 
-  /* type */
+  /* type — the three lines the FONTS block above refers to */
   --f-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
   --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
   --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;

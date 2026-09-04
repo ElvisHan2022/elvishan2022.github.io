@@ -6,11 +6,13 @@ Time: about 15 minutes. Cost: free. You need a GitHub account and a browser. No 
 
 | file | purpose |
 |---|---|
-| `index.html` | the page and the SVG floorplan |
+| `index.html` | the home room: the painting with clickable objects |
+| `img/home.jpg` | the painting |
+| `room.js`, `room.css`, `render.js` | room behavior and styling |
+| `map.html`, `app.js` | the floorplan site map (linked from the top right) |
 | `style.css` | colors, fonts, panel, mobile layout |
 | `content.js` | all site text: about, research, publications, builds, beliefs, contact |
-| `books.js` | your reading list for the future bookshelf view (not wired into the page yet) |
-| `app.js` | the code that renders content.js into the page |
+| `books.js` | the bookshelf and the movie list |
 | `README.md` | the editing guide |
 | `CLAUDE.md` | notes for Claude Code |
 | `SETUP.md` | this file |
@@ -23,7 +25,7 @@ Time: about 15 minutes. Cost: free. You need a GitHub account and a browser. No 
 3. Repository name: `elvishan2022.github.io` (all lowercase, your username followed by `.github.io`). This exact name is what makes GitHub serve it at that address with no extra setup.
 4. Set it to Public. Leave "Add a README" unchecked. Click "Create repository."
 5. On the empty repository page, click the link "uploading an existing file."
-6. Drag every file from this folder into the upload box: `index.html`, `style.css`, `content.js`, `books.js`, `app.js`, `README.md`, `CLAUDE.md`, `SETUP.md`. You can skip `build.py` and the `dist` folder.
+6. Drag every file from this folder into the upload box, including the `img` folder (drag the folder itself so `img/home.jpg` keeps its path). You can skip `build.py` and the `dist` folder. If you already uploaded the first version, upload again and GitHub replaces files with the same names; `index.html` will be replaced by the room.
 7. In the commit box at the bottom write `first version` and click "Commit changes."
 8. Click "Settings" (top tab of the repository), then "Pages" in the left sidebar.
 9. Under "Build and deployment," set Source to "Deploy from a branch," Branch to `main`, folder to `/ (root)`. Click Save.

@@ -4,306 +4,100 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elvis Han</title>
-<meta name="description" content="Elvis Han. Health data science, machine learning, and a running list of things I believe.">
+<meta name="description" content="Elvis Han. Health data science, machine learning, a bookshelf, and a running list of things I believe.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="room.css">
 </head>
-<body>
+<body class="room-page">
 
 <!-- ============ top strip ============ -->
 <header class="strip">
   <div class="strip-left">
     <span class="strip-name" id="site-name">Elvis Han</span>
-    <span class="strip-kanji">診療所</span>
+    <span class="strip-kanji">部屋</span>
     <span class="strip-sep" aria-hidden="true">·</span>
     <span class="strip-loc" id="site-loc">San Francisco</span>
   </div>
-  <div class="strip-right">
+  <div class="strip-mid">
     <span class="strip-now" id="site-now"></span>
-    <span class="strip-sep" aria-hidden="true">·</span>
+  </div>
+  <div class="strip-right">
     <span class="strip-time"><span id="clock">--:--</span> PT</span>
-    <span class="strip-open"><i></i>open</span>
+    <button class="strip-btn" id="reveal-toggle" type="button" aria-pressed="false">show objects</button>
+    <button class="strip-btn" id="help-toggle" type="button">help</button>
+    <a class="strip-btn ghost" href="map.html" title="Site map (floorplan)">map</a>
   </div>
 </header>
 
-<!-- ============ map stage ============ -->
-<main class="stage">
+<main class="stage room-stage">
 
-  <!-- directory (left) -->
-  <nav class="directory" aria-label="Rooms">
+  <!-- object directory -->
+  <nav class="directory room-dir" id="dir" aria-label="Objects in the room">
     <div class="dir-head">
-      <span class="dir-kanji">案内</span>
-      <span class="dir-title">Directory</span>
+      <span class="dir-kanji">部屋</span>
+      <span class="dir-title">Home room</span>
     </div>
     <ol class="dir-list" id="dir-list"></ol>
-    <p class="dir-hint">Click a room on the map, or a line above.</p>
+    <p class="dir-hint">Click an object in the room, or a line above.</p>
   </nav>
 
-  <!-- the floorplan -->
-  <div class="map-wrap">
-    <svg id="map" viewBox="0 0 1200 800" role="img" aria-labelledby="map-title" preserveAspectRatio="xMidYMid meet">
-      <title id="map-title">Floorplan of a small clinic and garden. Each room opens a section of the site.</title>
-      <defs>
-        <pattern id="tatami" width="18" height="18" patternUnits="userSpaceOnUse">
-          <rect width="18" height="18" fill="var(--tatami)"/>
-          <path d="M0 9 H18" stroke="var(--tatami-line)" stroke-width="0.6"/>
-        </pattern>
-        <pattern id="tatami-v" width="18" height="18" patternUnits="userSpaceOnUse">
-          <rect width="18" height="18" fill="var(--tatami)"/>
-          <path d="M9 0 V18" stroke="var(--tatami-line)" stroke-width="0.6"/>
-        </pattern>
-        <pattern id="planks" width="60" height="14" patternUnits="userSpaceOnUse">
-          <rect width="60" height="14" fill="var(--wood)"/>
-          <path d="M0 13.5 H60" stroke="var(--wood-line)" stroke-width="1"/>
-          <path d="M30 0 V14" stroke="var(--wood-line)" stroke-width="0.6" opacity=".6"/>
-        </pattern>
-        <pattern id="gravel" width="8" height="8" patternUnits="userSpaceOnUse">
-          <rect width="8" height="8" fill="var(--gravel)"/>
-          <circle cx="2" cy="2" r=".6" fill="var(--gravel-dot)"/>
-          <circle cx="6" cy="6" r=".6" fill="var(--gravel-dot)"/>
-        </pattern>
-        <radialGradient id="lantern" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stop-color="var(--gold)" stop-opacity=".55"/>
-          <stop offset="1" stop-color="var(--gold)" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="pond" cx="40%" cy="35%" r="70%">
-          <stop offset="0" stop-color="var(--water-hi)"/>
-          <stop offset="1" stop-color="var(--water)"/>
-        </radialGradient>
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="6" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
-          <feGaussianBlur stdDeviation="2"/>
-        </filter>
-      </defs>
-
-      <!-- ground -->
-      <rect x="0" y="0" width="1200" height="800" fill="var(--ground)"/>
-
-      <!-- compound wall -->
-      <rect x="52" y="34" width="1096" height="734" rx="6" fill="var(--yard)" stroke="var(--wall)" stroke-width="5"/>
-      <!-- bamboo fence ticks along the wall -->
-      <g stroke="var(--wall)" stroke-width="1.2" opacity=".55">
-        <path d="M52 60 h10 M52 90 h10 M52 120 h10 M52 150 h10 M52 180 h10 M52 210 h10 M52 240 h10 M52 270 h10 M52 300 h10 M52 330 h10 M52 360 h10 M52 390 h10 M52 420 h10 M52 450 h10 M52 480 h10 M52 510 h10 M52 540 h10 M52 570 h10 M52 600 h10 M52 630 h10 M52 660 h10 M52 690 h10 M52 720 h10 M52 750 h10"/>
-        <path d="M1138 60 h10 M1138 90 h10 M1138 120 h10 M1138 150 h10 M1138 180 h10 M1138 210 h10 M1138 240 h10 M1138 270 h10 M1138 300 h10 M1138 330 h10 M1138 360 h10 M1138 390 h10 M1138 420 h10 M1138 450 h10 M1138 480 h10 M1138 510 h10 M1138 540 h10 M1138 570 h10 M1138 600 h10 M1138 630 h10 M1138 660 h10 M1138 690 h10 M1138 720 h10 M1138 750 h10"/>
-      </g>
-
-      <!-- ===== garden (contact) ===== -->
-      <g class="room room-garden" data-room="contact" tabindex="0" role="button" aria-label="Garden: contact">
-        <rect class="hit" x="60" y="470" width="1080" height="290" fill="transparent"/>
-        <!-- moss lawn -->
-        <path d="M60 470 H1140 V760 H60 Z" fill="var(--moss)"/>
-        <!-- raked gravel -->
-        <path d="M120 500 Q 400 480 700 520 T 1120 540 V740 H120 Z" fill="url(#gravel)" opacity=".9"/>
-        <!-- pond -->
-        <ellipse cx="900" cy="640" rx="170" ry="82" fill="url(#pond)" stroke="var(--water-edge)" stroke-width="3"/>
-        <ellipse cx="880" cy="625" rx="120" ry="52" fill="none" stroke="var(--water-hi)" stroke-width="1" opacity=".5"/>
-        <ellipse cx="860" cy="612" rx="70" ry="28" fill="none" stroke="var(--water-hi)" stroke-width="1" opacity=".35"/>
-        <!-- koi -->
-        <g class="koi">
-          <path d="M840 655 c8 -6 18 -6 26 0 c-8 6 -18 6 -26 0z" fill="var(--seal)"/>
-          <path d="M930 610 c8 -6 18 -6 26 0 c-8 6 -18 6 -26 0z" fill="var(--paper)"/>
-        </g>
-        <!-- stepping stones from engawa down to the gate -->
-        <g fill="var(--stone)" stroke="var(--stone-edge)" stroke-width="1.5">
-          <ellipse cx="420" cy="490" rx="16" ry="10"/>
-          <ellipse cx="438" cy="520" rx="15" ry="9"/>
-          <ellipse cx="426" cy="550" rx="17" ry="10"/>
-          <ellipse cx="450" cy="580" rx="15" ry="9"/>
-          <ellipse cx="440" cy="612" rx="16" ry="10"/>
-          <ellipse cx="462" cy="645" rx="15" ry="9"/>
-          <ellipse cx="455" cy="680" rx="17" ry="10"/>
-          <ellipse cx="478" cy="712" rx="15" ry="9"/>
-        </g>
-        <!-- maple -->
-        <g class="maple">
-          <line x1="230" y1="640" x2="230" y2="700" stroke="var(--bark)" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="230" cy="620" r="58" fill="var(--maple)" opacity=".92"/>
-          <circle cx="190" cy="640" r="36" fill="var(--maple-2)" opacity=".9"/>
-          <circle cx="272" cy="645" r="34" fill="var(--maple-2)" opacity=".9"/>
-          <circle cx="240" cy="590" r="30" fill="var(--maple-3)" opacity=".85"/>
-        </g>
-        <!-- stone lantern -->
-        <g transform="translate(680 700)" fill="var(--stone)" stroke="var(--stone-edge)" stroke-width="1.5">
-          <rect x="-8" y="10" width="16" height="22"/>
-          <rect x="-16" y="-2" width="32" height="12" rx="2"/>
-          <rect x="-10" y="-20" width="20" height="18" fill="var(--gold)" stroke="var(--stone-edge)"/>
-          <path d="M-20 -22 L0 -34 L20 -22 Z"/>
-          <circle cx="0" cy="-11" r="26" fill="url(#lantern)" stroke="none"/>
-        </g>
-        <!-- gate -->
-        <g transform="translate(600 768)" stroke="var(--wall)" stroke-width="6" stroke-linecap="round" fill="none">
-          <path d="M-46 0 V-30 M46 0 V-30 M-56 -30 H56 M-50 -18 H50"/>
-        </g>
-        <text class="lbl-kanji" x="118" y="530">庭</text>
-        <text class="lbl-en" x="118" y="548">garden · contact</text>
-      </g>
-
-      <!-- ===== building ===== -->
-      <!-- roof edge / footprint shadow -->
-      <rect x="128" y="78" width="944" height="396" rx="4" fill="var(--roof)"/>
-      <rect x="140" y="90" width="920" height="372" fill="var(--floor)"/>
-
-      <!-- corridor -->
-      <rect x="140" y="300" width="920" height="40" fill="url(#planks)"/>
-
-      <!-- engawa (beliefs) -->
-      <g class="room" data-room="beliefs" tabindex="0" role="button" aria-label="Engawa veranda: things I believe">
-        <rect class="fill" x="140" y="410" width="920" height="52" fill="url(#planks)"/>
-        <rect class="lit" x="140" y="410" width="920" height="52" fill="var(--gold)" opacity="0"/>
-        <!-- cushions on the veranda -->
-        <rect x="560" y="422" width="26" height="26" rx="4" fill="var(--seal)" opacity=".8"/>
-        <rect x="596" y="422" width="26" height="26" rx="4" fill="var(--indigo-2)" opacity=".9"/>
-        <!-- a cup -->
-        <circle cx="640" cy="436" r="5" fill="var(--paper)"/>
-        <text class="lbl-kanji" x="156" y="446">縁側</text>
-        <text class="lbl-en" x="214" y="446">veranda · things i believe</text>
-      </g>
-
-      <!-- genkan (about) -->
-      <g class="room" data-room="about" tabindex="0" role="button" aria-label="Genkan entrance: about">
-        <rect class="fill" x="140" y="90" width="200" height="210" fill="var(--stone-floor)"/>
-        <rect class="lit" x="140" y="90" width="200" height="210" fill="var(--gold)" opacity="0"/>
-        <!-- step up to tatami -->
-        <rect x="140" y="236" width="200" height="64" fill="url(#tatami)"/>
-        <!-- shoes -->
-        <g fill="var(--ink-soft)">
-          <rect x="176" y="198" width="10" height="24" rx="4"/>
-          <rect x="190" y="198" width="10" height="24" rx="4"/>
-        </g>
-        <!-- door on the north wall -->
-        <rect x="222" y="86" width="40" height="8" fill="var(--seal)"/>
-        <!-- notice board -->
-        <rect x="292" y="120" width="34" height="46" fill="var(--paper)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <path d="M298 130 h22 M298 138 h22 M298 146 h14" stroke="var(--ink-soft)" stroke-width="1.5"/>
-        <!-- entrance light -->
-        <circle cx="242" cy="96" r="70" fill="url(#lantern)"/>
-        <text class="lbl-kanji" x="156" y="126">玄関</text>
-        <text class="lbl-en" x="156" y="144">entrance · about</text>
-      </g>
-
-      <!-- exam room (research) -->
-      <g class="room" data-room="research" tabindex="0" role="button" aria-label="Exam room: research">
-        <rect class="fill" x="340" y="90" width="380" height="210" fill="url(#tatami)"/>
-        <rect class="lit" x="340" y="90" width="380" height="210" fill="var(--gold)" opacity="0"/>
-        <!-- exam bed -->
-        <rect x="380" y="150" width="60" height="120" rx="6" fill="var(--paper)" stroke="var(--wood-line)" stroke-width="2"/>
-        <rect x="386" y="156" width="48" height="20" rx="4" fill="var(--indigo-2)"/>
-        <!-- desk + monitor -->
-        <rect x="560" y="120" width="120" height="44" rx="2" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <rect x="600" y="128" width="40" height="26" rx="2" fill="var(--indigo-2)"/>
-        <path d="M606 136 h28 M606 142 h18" stroke="var(--gold)" stroke-width="1.5"/>
-        <!-- stool -->
-        <circle cx="620" cy="190" r="12" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <!-- wearable on a tray -->
-        <rect x="560" y="220" width="70" height="40" rx="4" fill="var(--paper)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <circle cx="580" cy="240" r="8" fill="none" stroke="var(--ink-soft)" stroke-width="2"/>
-        <path d="M596 240 l6 -8 l6 16 l6 -14 l6 6 h10" fill="none" stroke="var(--seal)" stroke-width="1.8" stroke-linecap="round"/>
-        <!-- sliding door to corridor -->
-        <rect x="500" y="296" width="60" height="6" fill="var(--paper)"/>
-        <text class="lbl-kanji" x="356" y="126">診察室</text>
-        <text class="lbl-en" x="356" y="144">exam room · research</text>
-      </g>
-
-      <!-- study (publications) -->
-      <g class="room" data-room="publications" tabindex="0" role="button" aria-label="Study: publications and writing">
-        <rect class="fill" x="720" y="90" width="340" height="210" fill="url(#tatami-v)"/>
-        <rect class="lit" x="720" y="90" width="340" height="210" fill="var(--gold)" opacity="0"/>
-        <!-- bookshelves along the east wall -->
-        <g fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5">
-          <rect x="1030" y="100" width="24" height="190"/>
-        </g>
-        <g stroke-width="3" stroke-linecap="round">
-          <path d="M1036 110 v20 M1042 110 v20 M1048 110 v20" stroke="var(--seal)"/>
-          <path d="M1036 140 v22 M1042 140 v22 M1048 140 v22" stroke="var(--indigo-2)"/>
-          <path d="M1036 172 v20 M1042 172 v20 M1048 172 v20" stroke="var(--paper)"/>
-          <path d="M1036 202 v22 M1042 202 v22 M1048 202 v22" stroke="var(--moss-2)"/>
-          <path d="M1036 234 v20 M1042 234 v20 M1048 234 v20" stroke="var(--seal)"/>
-        </g>
-        <!-- low writing desk with paper and brush -->
-        <rect x="860" y="180" width="120" height="60" rx="3" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <rect x="880" y="192" width="50" height="36" fill="var(--paper)"/>
-        <path d="M888 202 h30 M888 210 h30 M888 218 h18" stroke="var(--ink-soft)" stroke-width="1.5"/>
-        <line x1="950" y1="188" x2="960" y2="232" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
-        <!-- zabuton -->
-        <rect x="900" y="250" width="34" height="34" rx="5" fill="var(--indigo-2)"/>
-        <!-- desk lamp glow -->
-        <circle cx="920" cy="200" r="60" fill="url(#lantern)"/>
-        <text class="lbl-kanji" x="736" y="126">書斎</text>
-        <text class="lbl-en" x="736" y="144">study · publications</text>
-      </g>
-
-      <!-- workshop (builds) -->
-      <g class="room" data-room="builds" tabindex="0" role="button" aria-label="Workshop: builds and hackathons">
-        <rect class="fill" x="140" y="340" width="520" height="70" fill="var(--concrete)"/>
-        <rect class="lit" x="140" y="340" width="520" height="70" fill="var(--gold)" opacity="0"/>
-        <!-- workbench -->
-        <rect x="360" y="352" width="200" height="30" rx="2" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <!-- laptop -->
-        <rect x="380" y="356" width="34" height="22" rx="2" fill="var(--indigo-2)"/>
-        <path d="M386 363 h22 M386 369 h14" stroke="var(--gold)" stroke-width="1.5"/>
-        <!-- soldering bits / parts -->
-        <circle cx="440" cy="367" r="5" fill="var(--seal)"/>
-        <rect x="454" y="360" width="26" height="14" rx="2" fill="var(--moss-2)"/>
-        <rect x="490" y="358" width="18" height="18" rx="9" fill="var(--paper)"/>
-        <path d="M520 360 v16 M528 360 v16 M536 360 v16" stroke="var(--paper)" stroke-width="2"/>
-        <text class="lbl-kanji" x="156" y="380">工房</text>
-        <text class="lbl-en" x="214" y="380">workshop · builds</text>
-      </g>
-
-      <!-- tea room (decorative; opens about) -->
-      <g class="room room-quiet" data-room="about" tabindex="-1" aria-hidden="true">
-        <rect class="fill" x="660" y="340" width="400" height="70" fill="url(#tatami)"/>
-        <rect class="lit" x="660" y="340" width="400" height="70" fill="var(--gold)" opacity="0"/>
-        <rect x="820" y="356" width="64" height="38" rx="3" fill="var(--wood)" stroke="var(--wood-line)" stroke-width="1.5"/>
-        <circle cx="838" cy="375" r="6" fill="var(--paper)"/>
-        <circle cx="866" cy="375" r="6" fill="var(--paper)"/>
-        <rect x="900" y="360" width="30" height="30" rx="4" fill="var(--seal)" opacity=".8"/>
-        <rect x="770" y="360" width="30" height="30" rx="4" fill="var(--indigo-2)"/>
-        <text class="lbl-kanji" x="676" y="380">茶室</text>
-        <text class="lbl-en" x="734" y="380">tea room</text>
-      </g>
-
-      <!-- interior walls -->
-      <g stroke="var(--wall-in)" stroke-width="4" fill="none" stroke-linecap="square">
-        <path d="M340 90 V300 M720 90 V300"/>
-        <path d="M140 300 H1060 M140 340 H1060 M140 410 H1060"/>
-        <path d="M660 340 V410"/>
-      </g>
-      <!-- door gaps painted over the walls -->
-      <g stroke="var(--paper)" stroke-width="6" stroke-linecap="butt">
-        <path d="M250 300 H300"/>
-        <path d="M500 300 H560"/>
-        <path d="M860 300 H920"/>
-        <path d="M380 340 H430"/>
-        <path d="M840 340 H890"/>
-        <path d="M300 410 H360 M560 410 H640 M900 410 H960"/>
-      </g>
-      <!-- outer wall of the building -->
-      <rect x="140" y="90" width="920" height="372" fill="none" stroke="var(--wall-in)" stroke-width="6"/>
-
-      <!-- compass / north mark -->
-      <g transform="translate(1100 80)" fill="none" stroke="var(--label)" stroke-width="1.5" opacity=".8">
-        <circle r="14"/>
-        <path d="M0 -10 L5 4 L0 0 L-5 4 Z" fill="var(--seal)" stroke="none"/>
-        <text y="-20" text-anchor="middle" class="lbl-en">N</text>
-      </g>
-    </svg>
+  <!-- the scene: painting + hotspot layer, same box, same aspect ratio -->
+  <div class="scene-wrap">
+    <div class="scene" id="scene">
+      <div class="scene-inner" id="scene-inner">
+        <picture>
+          <source srcset="img/home.webp" type="image/webp">
+          <img class="scene-img" src="img/home.jpg" decoding="async" fetchpriority="high" alt="An illustrated bedroom: a tall bookshelf, a bed, a CD rack and album covers, a projector, a low desk with a laptop and an open journal under a bright window, papers on the floor, a volleyball in the corner." width="2752" height="1536">
+        </picture>
+        <svg class="hotspots" viewBox="0 0 2000 1116" preserveAspectRatio="none" aria-hidden="false">
+          <defs>
+            <filter id="hs-glow" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur stdDeviation="8" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Each hotspot: data-spot matches an entry in ROOM.spots (room.js). Shapes are in a 2000 x 1116 frame. -->
+          <rect class="hs" data-spot="books"   x="150" y="55"  width="480" height="665" rx="6"/>
+          <rect class="hs" data-spot="builds"  x="370" y="28"  width="220" height="82"  rx="6"/>
+          <rect class="hs" data-spot="music"   x="738" y="298" width="195" height="225" rx="6"/>
+          <rect class="hs" data-spot="music"   x="1018" y="300" width="155" height="222" rx="6"/>
+          <rect class="hs" data-spot="movies"  x="940" y="518" width="215" height="100" rx="6"/>
+          <rect class="hs" data-spot="writing" x="936" y="626" width="190" height="228" rx="6"/>
+          <rect class="hs" data-spot="about"   x="1300" y="150" width="480" height="490" rx="6"/>
+          <rect class="hs" data-spot="contact" x="1660" y="480" width="135" height="180" rx="6"/>
+          <rect class="hs" data-spot="beliefs" x="1172" y="688" width="160" height="80"  rx="6"/>
+          <rect class="hs" data-spot="research" x="1348" y="638" width="155" height="125" rx="6"/>
+          <rect class="hs" data-spot="publications" x="738" y="948" width="340" height="120" rx="6"/>
+          <rect class="hs" data-spot="outdoor" x="1658" y="808" width="175" height="185" rx="6"/>
+          <rect class="hs" data-spot="now"     x="183" y="778" width="95"  height="115" rx="6"/>
+        </svg>
+        <div class="hs-label" id="hs-label" aria-hidden="true"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- ============ status (bottom-left) ============ -->
+  <!-- help card (bottom-right), shown on first visit -->
+  <aside class="help" id="help" hidden>
+    <div class="help-head"><span class="help-kanji">案</span><b>How to use this room</b><button class="help-close" id="help-close" aria-label="Close help">×</button></div>
+    <p>Everything in the painting that belongs to me is clickable. Hover to see what an object holds; click to open it.</p>
+    <ul>
+      <li>The bookshelf is everything I have read. Tap a spine.</li>
+      <li>The laptop is current research; the papers on the floor are publications.</li>
+      <li>The journal on the desk is a list of things I believe.</li>
+      <li>Prefer a list? Use the directory on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
+    </ul>
+  </aside>
+
+  <!-- status (bottom-left) -->
   <aside class="status" aria-label="Site notes">
-    <div class="status-row"><span class="k">rooms</span><span class="v" id="status-rooms">6</span></div>
-    <div class="status-row"><span class="k">beliefs held</span><span class="v" id="status-beliefs">0</span></div>
-    <div class="status-row"><span class="k">last edit</span><span class="v" id="status-updated">—</span></div>
+    <div class="status-row"><span class="k">books on shelf</span><span class="v" id="status-books">0</span></div>
+    <div class="status-row"><span class="k">currently reading</span><span class="v" id="status-reading">0</span></div>
   </aside>
 
   <!-- ============ shoji panel ============ -->
-  <section class="panel" id="panel" aria-hidden="true" role="dialog" aria-labelledby="panel-title">
+  <section class="panel" id="panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="panel-title">
     <div class="panel-inner">
       <header class="panel-head">
         <div class="panel-kanji" id="panel-kanji"></div>
@@ -315,23 +109,26 @@
       </header>
       <div class="panel-body" id="panel-body"></div>
       <footer class="panel-foot">
-        <button class="pager" id="pager-prev">← prev room</button>
-        <button class="pager" id="pager-next">next room →</button>
+        <button class="pager" id="pager-prev">← prev</button>
+        <button class="pager" id="pager-next">next →</button>
       </footer>
     </div>
   </section>
   <div class="scrim" id="scrim"></div>
 </main>
 
-<!-- ============ mobile / no-map fallback ============ -->
+<!-- mobile / no-js fallback: everything, stacked -->
 <section class="stack" id="stack" aria-label="All sections"></section>
 
 <footer class="colophon">
-  <span>Drawn as a floorplan because I would rather show you where I work than tell you.</span>
+  <span>A room instead of a résumé. The <a href="map.html">floorplan</a> still exists if you prefer a map.</span>
   <span id="colophon-links"></span>
 </footer>
 
 <script src="content.js"></script>
-<script src="app.js"></script>
+<script src="books.js"></script>
+<script src="posts.js"></script>
+<script src="render.js"></script>
+<script src="room.js"></script>
 </body>
 </html>
