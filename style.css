@@ -48,7 +48,7 @@
    --------------------------------------------------------- */
 
 /* A. Current: literary, warm  ← the @import line */
-@import url("https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400&display=swap");
 
 :root {
   /* palette */
@@ -268,7 +268,8 @@ button { font: inherit; cursor: pointer; }
 .panel-body p { margin: 0 0 14px; max-width: 62ch; }
 .panel-body h3 {
   font-family: var(--f-label); font-size: 14px; letter-spacing: var(--label-track); text-transform: var(--label-case);
-  font-style: italic; color: var(--seal); margin: 26px 0 10px; font-weight: 500;
+  font-style: italic; font-weight: 500; font-synthesis: none;
+  color: var(--seal); margin: 26px 0 10px;
 }
 .panel-body ul { margin: 0 0 14px; padding-left: 20px; }
 .panel-body li { margin: 4px 0; }
