@@ -12,29 +12,21 @@
 </head>
 <body class="room-page fill">
 
-<!-- ============ top strip ============ -->
-<header class="strip">
-  <div class="strip-left">
-    <span class="strip-name" id="site-name">Elvis Han</span>
-    <span class="strip-kanji">部屋</span>
-    <span class="strip-sep" aria-hidden="true">·</span>
-    <span class="strip-loc" id="site-loc">San Francisco</span>
-  </div>
-  <div class="strip-mid">
-    <span class="strip-now" id="site-now"></span>
-  </div>
-  <div class="strip-right">
-    <span class="strip-time"><span id="clock">--:--</span> PT</span>
-    <button class="strip-btn" id="reveal-toggle" type="button" aria-pressed="false">show objects</button>
-    <button class="strip-btn" id="help-toggle" type="button">help</button>
-    <a class="strip-btn ghost" href="map.html" title="Site map (floorplan)">map</a>
-  </div>
-</header>
-
 <main class="stage room-stage">
 
-  <!-- object directory -->
-  <nav class="directory room-dir" id="dir" aria-label="Objects in the room">
+  <!-- floating controls (replaces the old top banner) -->
+  <div class="room-tools" aria-label="Room controls">
+    <button class="room-tool" id="reveal-toggle" type="button" aria-pressed="false">show objects</button>
+    <button class="room-tool" id="help-toggle" type="button">help</button>
+    <a class="room-tool ghost" href="map.html" title="Site map (floorplan)">map</a>
+  </div>
+
+  <!-- directory tab + drawer -->
+  <button class="dir-tab" id="dir-toggle" type="button" aria-expanded="false" aria-controls="dir">
+    <span class="dir-tab-kanji">部屋</span>
+    <span class="dir-tab-label">menu</span>
+  </button>
+  <nav class="directory room-dir" id="dir" hidden aria-label="Objects in the room">
     <div class="dir-head">
       <span class="dir-kanji">部屋</span>
       <span class="dir-title">Home room</span>
@@ -86,7 +78,7 @@
       <li>The bookshelf is everything I have read. Tap a spine.</li>
       <li>The laptop is current research; the papers on the floor are publications.</li>
       <li>The journal on the desk is a list of things I believe.</li>
-      <li>Prefer a list? Use the directory on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
+      <li>Prefer a list? Open the menu tab on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
     </ul>
   </aside>
 

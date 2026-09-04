@@ -16,22 +16,8 @@
   --hs-width: 2px;          /* outline thickness */
 }
 
-/* ---------- top strip: one row, never wraps into a dark band ---------- */
-.room-page .strip { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; padding: 12px 22px 10px; }
-.room-page .strip-left, .room-page .strip-right { flex-wrap: nowrap; align-items: center; }
-.room-page .strip-mid { min-width: 0; text-align: center; }
-.room-page .strip-now { display: block; max-width: 100%; margin: 0 auto; }
-.strip-btn {
-  background: none; border: 1px solid rgba(232,179,90,.35); color: var(--gold);
-  font-family: var(--f-label); font-size: 11.5px; letter-spacing: var(--label-track); text-transform: var(--label-case);
-  padding: 7px 10px; cursor: pointer; line-height: 1;
-}
-.strip-btn:hover, .strip-btn[aria-pressed="true"], .strip-btn[aria-expanded="true"] { background: rgba(232,179,90,.14); }
-.strip-btn i { font-style: normal; font-family: var(--f-display); font-size: 13px; margin-right: 7px; opacity: .85; }
-.strip-btn.ghost { border-color: transparent; text-decoration: none; }
-.strip-btn.ghost:hover { border-color: rgba(232,179,90,.35); }
-
-.room-stage { background: radial-gradient(120% 90% at 50% 40%, #2a2419 0%, var(--ground) 70%); }
+/* ---------- top strip (map page only; room page uses .room-tools) ---------- */
+.room-page .stage { height: 100vh; min-height: 560px; }
 
 /* ---------------------------------------------------------
    FILL MODE. <body class="room-page fill"> makes the painting
@@ -40,12 +26,7 @@
    back (the painting sits in a box on a dark wall).
    --------------------------------------------------------- */
 .fill { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
-.fill .strip {
-  flex: 0 0 auto; position: relative; z-index: 6; border-bottom: 0;
-  background: linear-gradient(rgba(12,9,6,.82), rgba(12,9,6,.35) 70%, rgba(12,9,6,0));
-  padding-bottom: 20px; margin-bottom: -20px;
-}
-.fill .room-stage { flex: 1 1 auto; min-height: 0; background: var(--ground); }
+.fill .room-stage { flex: 1 1 auto; min-height: 0; background: var(--ground); height: 100%; }
 .fill .scene-wrap { position: absolute; inset: 0; padding: 0; overflow: hidden; }
 .fill .scene {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
@@ -58,8 +39,53 @@
 .fill .room-dir { background: rgba(15,12,8,.8); backdrop-filter: blur(8px); }
 .fill .status, .fill .help { backdrop-filter: blur(8px); }
 
-/* ---------- scene: framed, centered, right of the directory ---------- */
-.scene-wrap { position: absolute; inset: 0; left: 290px; display: grid; place-items: center; padding: 10px 12px 12px 0; }
+/* ---------- floating controls (top-right) ---------- */
+.room-tools {
+  position: absolute; top: 18px; right: 18px; z-index: 6;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+}
+.room-tool {
+  background: rgba(15,12,8,.82); border: 1px solid rgba(232,179,90,.35); color: var(--gold);
+  font-family: var(--f-label); font-size: 11.5px; letter-spacing: var(--label-track); text-transform: var(--label-case);
+  padding: 7px 10px; cursor: pointer; line-height: 1; backdrop-filter: blur(6px);
+  text-decoration: none;
+}
+.room-tool:hover, .room-tool[aria-pressed="true"], .room-tool[aria-expanded="true"] { background: rgba(232,179,90,.14); }
+.room-tool.ghost { border-color: rgba(185,192,211,.22); color: var(--label); }
+.room-tool.ghost:hover { border-color: rgba(232,179,90,.35); color: var(--gold); }
+
+/* ---------- directory tab + drawer ---------- */
+.dir-tab {
+  position: absolute; left: 0; top: 50%; z-index: 6;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: rgba(15,12,8,.82); border: 1px solid rgba(232,179,90,.35); border-left: 0;
+  color: var(--gold); padding: 14px 10px 14px 8px; cursor: pointer; line-height: 1;
+  backdrop-filter: blur(6px); border-radius: 0 6px 6px 0;
+  transition: background .2s var(--ease), border-color .2s var(--ease);
+}
+.dir-tab:hover, .dir-tab[aria-expanded="true"] { background: rgba(232,179,90,.14); border-color: rgba(232,179,90,.55); }
+.dir-tab-kanji { font-family: var(--f-display); font-size: 20px; font-weight: 500; }
+.dir-tab-label {
+  font-family: var(--f-label); font-size: 10px; letter-spacing: var(--label-track); text-transform: var(--label-case);
+  color: var(--label-dim); writing-mode: vertical-rl; text-orientation: mixed;
+}
+.dir-open .dir-tab { opacity: 0; pointer-events: none; }
+
+.room-dir {
+  left: 0; top: 0; bottom: 0; z-index: 7; width: min(280px, 88vw);
+  border-radius: 0; border-left: 0; border-top: 0; border-bottom: 0;
+  padding: 18px 16px 14px;
+  transform: translateX(-104%);
+  transition: transform .35s var(--ease);
+  overflow-y: auto;
+}
+.room-dir:not([hidden]) { display: block; transform: translateX(0); }
+.room-dir[hidden] { display: block; transform: translateX(-104%); pointer-events: none; }
+
+/* ---------- scene: full bleed in fill mode ---------- */
+.scene-wrap { position: absolute; inset: 0; display: grid; place-items: center; padding: 10px 12px; }
+.room-stage { background: radial-gradient(120% 90% at 50% 40%, #2a2419 0%, var(--ground) 70%); }
 .scene {
   position: relative;
   width: min(100%, calc((100vh - 90px) * (2752 / 1536)));
@@ -95,10 +121,9 @@
 .hs-label b { font-family: var(--f-display); font-weight: 500; color: var(--gold); margin-right: 8px; font-size: 13px; text-transform: none; letter-spacing: .02em; }
 .hs-label.show { opacity: 1; }
 
-/* ---------- directory, left ---------- */
-.room-dir { width: 250px; }
+/* ---------- directory (drawer overrides shared styles) ---------- */
+.room-dir { width: min(280px, 88vw); }
 .room-dir .dir-list button { grid-template-columns: 50px 1fr auto; padding: 10px 0; min-height: 44px; }
-.room-dir[hidden] { display: none; }
 
 /* ---------- help card, bottom right of the stage ---------- */
 .help {
@@ -187,15 +212,15 @@
 /* ---------- mobile ---------- */
 @media (max-width: 820px) {
   .fill { height: auto; overflow: visible; display: block; }
-  .fill .strip { background: none; padding-bottom: 10px; margin-bottom: 0; }
-  .fill .room-stage { display: flex; flex-direction: column; }
+  .fill .room-stage { display: flex; flex-direction: column; height: auto; }
   .fill .scene-wrap { position: relative; inset: auto; padding: 8px 8px 0; }
   .fill .scene { position: relative; left: auto; top: auto; transform: none; width: 100% !important; height: auto !important; }
   .fill .scene-wrap::after { display: none; }
   .fill .colophon, .fill .stack { display: block; }
-  .room-page .strip { grid-template-columns: 1fr; gap: 8px; padding: 12px 16px 10px; }
-  .room-page .strip-mid { display: none; }
-  .room-page .strip-right { flex-wrap: wrap; }
+  .room-tools { position: static; justify-content: flex-start; padding: 12px 14px 0; }
+  .dir-tab { display: none; }
+  .room-dir { position: static; width: auto; margin: 12px 14px 0; transform: none !important; pointer-events: auto !important; }
+  .room-dir[hidden] { display: block !important; transform: none !important; }
   .room-stage { display: flex; flex-direction: column; }
   .scene-wrap { order: -1; position: relative; inset: auto; left: auto; padding: 8px 8px 0; }
   .scene { width: 100%; max-height: none; }

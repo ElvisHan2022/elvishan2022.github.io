@@ -26,11 +26,7 @@
   const byId = Object.fromEntries(SPOTS.map(s => [s.id, s]));
   const order = SPOTS.map(s => s.id);
 
-  /* ---------- strip + status ---------- */
-  $("#site-name").textContent = S.name;
-  $("#site-loc").textContent = S.location;
-  $("#site-now").textContent = S.now || "";
-  window.R.clock("#clock");
+  /* ---------- status + colophon ---------- */
   window.R.colophon("#colophon-links");
 
   const allBooks = B.shelves.flatMap(s => s.items.map(i => ({ ...i, shelf: s })));
@@ -87,9 +83,20 @@
   const sceneImg = document.querySelector(".scene-img");
   if (sceneImg && !sceneImg.complete) sceneImg.addEventListener("load", fitScene, { once: true });
 
-  /* ---------- directory + help toggles ---------- */
-  const help = $("#help"), revealBtn = $("#reveal-toggle");
+  /* ---------- directory drawer + help toggles ---------- */
+  const help = $("#help"), revealBtn = $("#reveal-toggle"), dirNav = $("#dir"), dirToggle = $("#dir-toggle");
   const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+  function setDir(open) {
+    dirNav.hidden = !open;
+    dirToggle.setAttribute("aria-expanded", String(open));
+    document.body.classList.toggle("dir-open", open);
+    if (open) dirNav.querySelector("button")?.focus({ preventScroll: true });
+  }
+  dirToggle.addEventListener("click", () => setDir(dirNav.hidden));
+  document.addEventListener("click", e => {
+    if (!dirNav.hidden && !dirNav.contains(e.target) && !dirToggle.contains(e.target)) setDir(false);
+  });
+  dirNav.addEventListener("click", e => { if (e.target.closest("button[data-spot]")) setDir(false); });
   /* "show objects" outlines every hotspot at once: hover does not exist on touch screens */
   function setReveal(on) { document.body.classList.toggle("reveal", on); revealBtn.setAttribute("aria-pressed", String(on)); store.set("reveal", on ? "1" : "0"); }
   setReveal(store.get("reveal") === "1");
@@ -159,7 +166,8 @@
   $("#panel-close").addEventListener("click", () => close());
   scrim.addEventListener("click", () => close());
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && current) close();
+    if (e.key === "Escape" && current) { close(); return; }
+    if (e.key === "Escape" && !dirNav.hidden) { setDir(false); return; }
     if (!current) return;
     if (e.key === "ArrowRight") open(order[(order.indexOf(current) + 1) % order.length]);
     if (e.key === "ArrowLeft") open(order[(order.indexOf(current) - 1 + order.length) % order.length]);
