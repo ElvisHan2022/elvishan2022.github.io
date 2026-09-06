@@ -255,6 +255,53 @@ html:has(.room-page.fill) { overflow: hidden; height: 100%; }
 
 .scrim { background: rgba(12,10,6,.35); }
 
+/* ---------- panel body: Arimo + bubbly tag keycaps ---------- */
+.room-page .panel-body {
+  font-family: var(--f-chrome);
+}
+.room-page .panel-body p,
+.room-page .panel-body li,
+.room-page .panel-body h3,
+.room-page .panel-body .intro,
+.room-page .entry .meta,
+.room-page .entry p,
+.room-page .entry a.more,
+.room-page .pub .venue,
+.room-page .pub p,
+.room-page .pub a.more,
+.room-page .beliefs li,
+.room-page .links a,
+.room-page .panel-sub,
+.room-page .panel-foot .pager,
+.room-page .book-card .meta,
+.room-page .book-card .reads,
+.room-page .book-card .review,
+.room-page .post .when,
+.room-page .post p,
+.room-page .legend,
+.room-page .spines .empty,
+.room-page .album-artist,
+.room-page .album-note {
+  font-family: var(--f-chrome);
+}
+
+.room-page .tags { gap: 8px; margin-top: 10px; }
+.room-page .tags span {
+  font-family: var(--f-chrome);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--chrome-ink);
+  background: linear-gradient(180deg, var(--chrome-bg-lit) 0%, var(--chrome-bg) 42%, var(--chrome-bg) 100%);
+  border: 0;
+  border-radius: calc(var(--chrome-radius) - 4px);
+  padding: 6px 13px 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.55),
+    0 2px 0 #c4b596,
+    0 4px 10px rgba(18,14,8,.14);
+}
+
 /* ---------- bookshelf view ---------- */
 .shelf { margin: 8px 0 18px; }
 .shelf h3 .count { color: var(--ink-soft); letter-spacing: 0; font-weight: 400; }
@@ -350,6 +397,15 @@ html:has(.room-page.fill) { overflow: hidden; height: 100%; }
   .stack .book-card .review, .stack .post p { color: var(--label); }
   .stack .post h4 a, .stack .feeds a { color: var(--paper); }
   .stack .legend { color: var(--label-dim); }
+  .room-page .stack .panel-body,
+  .room-page .stack .panel-body p,
+  .room-page .stack .panel-body li { font-family: var(--f-chrome); }
+  .room-page .stack .tags span {
+    color: var(--chrome-ink);
+    background: linear-gradient(180deg, var(--chrome-bg-lit) 0%, var(--chrome-bg) 100%);
+    border: 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 2px 0 #c4b596;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
