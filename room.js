@@ -334,7 +334,7 @@
   }
   function renderOutdoor() {
     const frag = document.createDocumentFragment();
-    frag.append(el("p", {}, "Fitness is a large part of who I am: physical therapy I had to learn the hard way, plyometrics, serratus push-ups, club volleyball, hiking, pilates, and a summit of Kilimanjaro. This is the door to a second room that does not exist yet."));
+    frag.append(el("p", {}, "Healthy Body <=> Health Mind. Currently learning how to swim again, and I personally believe everyone should do some pilates."));
     frag.append(el("p", { class: "intro" }, "Planned: a gym and trailhead scene with a volleyball net, a pull-up bar, hiking boots, a pilates mat, and a corkboard of trail photos, each opening a log."));
     return frag;
   }
