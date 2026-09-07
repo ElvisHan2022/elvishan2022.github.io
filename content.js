@@ -26,7 +26,10 @@ window.SITE = {
       title: "About",
       subtitle: "Entrance. Take your shoes off.",
       blocks: [
-        { type: "p", text: "I am a master's student in Health Data Science at UCSF, arriving by way of public health and economics at Johns Hopkins. Thankfully, management consulting did not selecct me and I now research machine learning and clinical measurement." },
+        { type: "h", text: "CURRENTLY" },
+        { type: "p", text: "" },
+        { type: "h", text: "Introduction" },
+        { type: "p", text: "I am a master's student in Health Data Science at UCSF, arriving by way of public health and economics at Johns Hopkins. Thankfully, management consulting did not select me and I now research machine learning and clinical measurement." },
         { type: "p", text: "My past projects include Medicare readmission penalty analysis and wearable stress detection. I'm most interested in AI safety and accountability in AI, particularly the evaluation and deployment of any and every AI in healthcare & biosecurity." },
         { type: "p", text: "In other words, I think auditing may be a boring, yet necessary art." },
         { type: "h", text: "Training" },

@@ -1,6 +1,6 @@
 # elvishan.dev (working name)
 
-A personal site drawn as a bedroom: a painted room where every object opens a section. The bookshelf opens the reading list, the laptop opens research, the papers on the floor open publications, the boxes on the shelf open builds, the journal opens things I believe, the projector opens movies, the plant opens contact. An older floorplan view lives at `map.html`.
+A personal site drawn as a bedroom: a painted room where every object opens a section. The bookshelf opens the reading list, the laptop opens research, the papers on the floor open publications, the boxes on the shelf open builds, the journal opens things I believe, the CD rack opens music, the projector opens movies, the plant opens contact. An older floorplan view lives at `map.html`.
 
 No framework, no build step. The files:
 
@@ -8,11 +8,14 @@ No framework, no build step. The files:
 |---|---|---|
 | `content.js` | every word on the site (about, research, publications, builds, beliefs, contact) | you add a belief, a paper, a project, or change the "now" line |
 | `books.js` | the bookshelf: books, short stories, manga, manhwa, plus the movie list for the projector | you finish a book, write a review, or watch a film |
+| `music.js` | albums for the music panel: titles, artists, cover art, optional links | you add an album to the wall |
+| `posts.js` | writing list behind the low shelf | you publish a post elsewhere |
 | `index.html` | the home room: the painting plus the hotspot rectangles drawn over it | you move a hotspot or add an object |
 | `img/home.jpg` | the painting itself | you replace the room art |
-| `room.js`, `room.css` | room behavior (zoom, panel, bookshelf view) and its styling | rarely |
+| `img/music/` | album cover images referenced from `music.js` | you add a cover (jpg, png, or webp) |
+| `room.js`, `room.css` | room behavior (zoom, panel, bookshelf/music views) and its styling | rarely |
 | `map.html`, `app.js` | the floorplan site map, reachable from the top-right link | rarely |
-| `style.css` | shared colors, type, panel, mobile layout | you want a different palette or font |
+| `style.css` | shared colors, type, panel layout, mobile stack | you want a different palette or panel font |
 | `render.js` | shared renderer for content blocks | almost never |
 
 `build.py` is optional. It inlines everything into `dist/index.html` (one file you can email or drop anywhere) and `dist/artifact.html` (for claude.ai artifacts). GitHub Pages does not need it.
@@ -20,7 +23,7 @@ No framework, no build step. The files:
 ## Deploy to GitHub Pages (about five minutes)
 
 1. Create a new public repo, for example `elvishan2022.github.io` (that exact name gives you `https://elvishan2022.github.io` with no extra setup) or any name for a project site.
-2. Copy everything except `dist/` and `build.py` into it, keeping the `img/` folder.
+2. Copy everything except `dist/` and `build.py` into it, keeping the `img/` folder (including `img/music/` for album covers).
 3. Push to `main`.
 4. In the repo, Settings → Pages → Source: "Deploy from a branch", branch `main`, folder `/ (root)`. Save.
 5. Wait a minute. The site is at the URL Pages shows you.
@@ -47,20 +50,28 @@ Research and builds use `entry`:
   tags: ["wearables", "subgroup auditing"] }
 ```
 
-Publications use `pub`. The status text sets the badge color automatically: anything containing "submitted" is blue, "preparation" or "working" is outlined, everything else (accepted, published) is ink.
+Publications use `pub`. Status badges are colored bubbles (see `pub-legend` below). The color is picked from the status text automatically:
+
+| Status text contains | Color | Examples |
+|---|---|---|
+| `accepted` | green | "Accepted, NeurIPS 2026" |
+| `submitted`, `in review` | orange | "Submitted, Aug 2026", "Abstract submitted" |
+| everything else | blue | "In preparation", "Working paper" |
+
+Add a legend row at the top of the publications room with `{ type: "pub-legend" }`.
 
 ```js
 { type: "pub",
   title: "Paper title",
   venue: "Venue, year",
-  status: "Accepted",
+  status: "Submitted, Aug 2026",
   link: "https://...",                   // optional
   text: "" }                             // optional one-line summary
 ```
 
-Beliefs are just strings in the `beliefs` array of the `beliefs` room. Add a line, save, done. The counter in the bottom-left corner updates itself.
+Beliefs are just strings in the `beliefs` array of the `beliefs` room. Add a line, save, done. The books-on-shelf counter in the bottom-left corner updates itself.
 
-The `now` line at the top of the page is a single string. Keep it under about sixty characters or it truncates.
+The `now` string in `content.js` still drives the "Now" panel; it is no longer shown in a top banner.
 
 ## Moving or adding a hotspot in the room
 
@@ -86,6 +97,55 @@ Entries sort newest first automatically. `feeds` at the bottom of the file holds
 
 Why a manual list rather than a live feed: GitHub Pages serves static files only, and browsers block a page from reading another site's RSS directly (cross-origin). Pulling posts automatically would mean either a scheduled GitHub Action that fetches your feeds and rewrites `posts.js` on a timer, or a third-party proxy. Both are addable later; pasting four lines per post is faster until you are publishing weekly.
 
+## Music (album covers on the wall)
+
+Albums live in `music.js`. Cover art goes in `img/music/` and is referenced by path. `index.html` already loads `music.js` after `posts.js`.
+
+```js
+window.MUSIC = {
+  items: [
+    {
+      title: "Jane Doe",
+      artist: "Chainsaw Man OST",
+      cover: "img/music/jane-doe.jpg",   // drop the file in img/music/
+      note: "The cover on the wall — Reze.",
+    },
+    {
+      title: "Another Album",
+      artist: "Artist name",
+      cover: "img/music/another-album.webp",  // optional; omit for a color placeholder
+      link: "https://open.spotify.com/...",   // optional; makes the card a link
+      note: "Why it stays on the wall.",
+    },
+  ],
+};
+```
+
+- **`cover`** — path to a jpg, png, or webp in `img/music/`. If the file is missing, the panel falls back to a colored square.
+- **`link`** — optional. Omit it if the card should not navigate anywhere.
+- **`note`** — optional one-liner under the artist name.
+
+The music panel renders a grid of cover squares with title, artist, and note below each. Covers use the same rounded keycap frame as the floating UI.
+
+## Floating UI (menu, help, status, buttons)
+
+The directory, help card, status box, top-right buttons, and menu tab share one "keycap" look in `room.css`. Change only the six `--chrome-*` variables at the top of that file:
+
+| Variable | What it controls |
+|---|---|
+| `--chrome-bg` | beige face (`#e7dcc6`) |
+| `--chrome-bg-lit` | lighter top of the keycap |
+| `--chrome-ink` | text on beige |
+| `--chrome-ink-dim` | secondary text |
+| `--chrome-radius` | corner softness (`16px`) |
+| `--chrome-lip` | height of the printed bottom edge (`5px`) |
+
+Push `--chrome-radius` to `22px` for rounder keys, `--chrome-lip` to `7px` for chunkier ones. Move `--chrome-bg` toward `#e3d5b8` for warmer beige or `#e8e2d2` for cooler.
+
+The menu tab (`部屋 menu`) on the left opens the full object list; it is hidden by default. On mobile the list stays visible as a stacked section.
+
+Panel tag keywords and publication status bubbles reuse the same rounded style on the room page. Panel body text on the room page uses **Arimo** (`--f-chrome`); titles inside the panel still use the display font from `style.css`.
+
 ## What to change, and where
 
 | You want to change | Open | What to look for |
@@ -94,36 +154,40 @@ Why a manual list rather than a live feed: GitHub Pages serves static files only
 | A book, a review, a rating, a reread | `books.js` | `BOOKS.shelves` |
 | A film | `books.js` | `MOVIES.items` at the bottom |
 | A blog post or a profile link | `posts.js` | `POSTS.items` and `POSTS.feeds` |
+| An album or cover art | `music.js` | `MUSIC.items`; image file in `img/music/` |
 | The name or one-line description of a clickable object | `room.js` | the `SPOTS` list at the top |
 | Where an object's clickable box sits on the painting | `index.html` | the `<rect class="hs">` list, on a 2000 × 1116 grid |
-| The color and strength of the hover outline | `room.css` | the four `--hs-*` variables at the top |
+| The color and strength of the hover outline | `room.css` | the four `--hs-*` variables |
+| The beige floating panels and buttons | `room.css` | the six `--chrome-*` variables |
 | The help card text | `index.html` | `<aside class="help">` |
-| Fonts and the overall palette | `style.css` | the `:root` block |
+| Fonts and palette inside the sliding panel | `style.css` | the `@import` line and `:root` block |
 
 ## Full-bleed vs framed
 
-`index.html` line 13 is `<body class="room-page fill">`. With `fill`, the painting covers the whole window and the directory, status, and help card float over it. Delete the word `fill` and the painting returns to a framed box on a dark wall. Nothing else changes.
+`index.html` has `<body class="room-page fill">`. With `fill`, the painting covers the whole viewport as a background and the chrome panels float over it. Delete the word `fill` and the painting returns to a framed box on a dark wall. Nothing else changes.
 
-In fill mode the painting is scaled to cover the window but never cropped more than 20% past "fit", so the bookshelf and the volleyball corner always stay visible. That limit is the `contain * 1.2` line in `fitScene()` in `room.js`.
+In fill mode the painting uses `object-fit: cover` so there are no black bars at the edges. Hotspot outlines and zoom-to-object navigation still work when a panel is open.
 
 ## Fonts
 
-All type is controlled from one block at the top of `style.css`: an `@import` line that downloads the fonts, and three variables that assign them.
+Two layers:
 
-| Variable | What it sets inside a panel |
+**Inside the sliding panel** — controlled from the block at the top of `style.css`: an `@import` line and `--f-display`, `--f-body`, `--f-mono`, `--f-label`. Current defaults are Zen Old Mincho and Newsreader for the washi panel.
+
+**Floating chrome and room-page labels** — Arimo, set by `--f-chrome` in `room.css`. This covers the menu, help, status, buttons, tag bubbles, publication status pills, album labels, and panel body paragraphs on the room page.
+
+| Variable | What it sets |
 |---|---|
-| `--f-display` | the kanji and the big title, book titles, project titles, post titles |
-| `--f-body` | ordinary paragraphs and list items |
-| `--f-mono` | genuinely monospaced things, mainly the clock |
-| `--f-label` | the subtitle under the title, the small red section headings, buttons, dates, venues, tags, link labels |
+| `--f-display` | kanji and big titles, book and project titles |
+| `--f-body` | panel paragraphs and lists (map page and panel interior) |
+| `--f-label` | subtitles, section headings, dates, venues |
+| `--f-chrome` | beige UI and room-page body copy (Arimo) |
 
-Three more variables control the *character* of that small type rather than its family: `--f-label`, `--label-case`, and `--label-track`. Monospace plus uppercase plus wide letter-spacing is the "terminal HUD" look. Setting `--f-label: var(--f-body)`, `--label-case: none`, `--label-track: .02em` turns every label editorial in one edit.
+Three ready alternatives for the panel fonts are written as comments in `style.css`. To swap Arimo on the chrome, change the `@import` at the top of `room.css` and `--f-chrome`.
 
-Three ready alternatives are written out as comments in that block: sharper and editorial (Zen Old Mincho, Newsreader, JetBrains Mono), warmer with hand-written headings (Klee One, Lora), and modern sans (Zen Kaku Gothic New, Public Sans). Paste one set over the `@import` line and the three variables, commit, done.
+Keep a Japanese-capable face in `--f-display`, or kanji in the panel header fall back to a system font.
 
-To use a font that is not listed, find it on fonts.google.com, click "Get font" then "Get embed code", copy the URL out of the `<link>` they give you into the `@import`, and put the family name first in the matching variable. Keep a Japanese-capable face in `--f-display`, or the kanji labels fall back to a system font.
-
-Sizes are separate from families: panel body text is `.panel-body { font-size }`, the title is `.panel-title`, and the section headings are `.panel-body h3`, all in `style.css`.
+Sizes: panel body is `.panel-body { font-size }` in `style.css`; chrome labels are sized in `room.css`.
 
 ## Roadmap toward "more interactive"
 
@@ -136,4 +200,4 @@ Ideas in rough order of effort, all of which fit the current structure:
 
 ## Credits and notes
 
-The hanko in the panel corner is a placeholder (`印`). Change it in `style.css` under `.panel-head::after`. Fonts are Shippori Mincho, Source Serif 4, and IBM Plex Mono from Google Fonts; swap the `<link>` in `index.html` and the `--f-*` variables to change them.
+The hanko in the panel corner is a placeholder (`印`). Change it in `style.css` under `.panel-head::after`. Panel fonts load from Google Fonts via `@import` in `style.css`; chrome fonts load from `@import` in `room.css`.
