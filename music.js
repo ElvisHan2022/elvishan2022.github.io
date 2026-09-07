@@ -10,7 +10,7 @@ window.MUSIC = {
       title: "Jane Doe",
       artist: "Chainsaw Man OST",
       cover: "img/music/jane-doe.jpg",
-      note: "The cover on the wall — Reze.",
+      note: "In the Pool - Kensuke Ushio",
     },
     /* more albums:
     {
