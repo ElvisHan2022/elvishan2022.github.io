@@ -267,14 +267,31 @@
     const MU = window.MUSIC;
     if (!MU || !MU.items || !MU.items.length) {
       frag.append(el("p", {}, "The album covers on the wall are real; the list behind them is still being typed up. Songs and albums I keep returning to will go here, each with a player."));
-      frag.append(el("p", { class: "intro" }, "To add music: create music.js with window.MUSIC = { items: [{ title, artist, link, note }] } and include it in index.html."));
+      frag.append(el("p", { class: "intro" }, "To add music: create music.js with window.MUSIC = { items: [{ title, artist, cover, link, note }] }, put cover art in img/music/, and add <script src=\"music.js\"> to index.html."));
       return frag;
     }
     const grid = el("div", { class: "albums" });
-    MU.items.forEach(m => grid.append(el("a", { class: "album", href: m.link || "#", target: "_blank", rel: "noopener" },
-      el("span", { class: "album-art", style: `--h:${hue(m.title)}` }),
-      el("span", { class: "album-title" }, m.title), el("span", { class: "album-artist" }, m.artist || ""),
-      m.note ? el("span", { class: "album-note" }, m.note) : null)));
+    MU.items.forEach(m => {
+      const art = el("span", { class: "album-art" + (m.cover ? " has-cover" : ""), style: m.cover ? undefined : `--h:${hue(m.title)}` });
+      if (m.cover) {
+        const img = el("img", { src: m.cover, alt: (m.title || "Album") + " cover", loading: "lazy", decoding: "async" });
+        img.addEventListener("error", () => {
+          img.remove();
+          art.classList.remove("has-cover");
+          art.style.setProperty("--h", String(hue(m.title || "album")));
+        });
+        art.append(img);
+      }
+      const kids = [
+        art,
+        el("span", { class: "album-title" }, m.title),
+        el("span", { class: "album-artist" }, m.artist || ""),
+        m.note ? el("span", { class: "album-note" }, m.note) : null,
+      ];
+      grid.append(m.link
+        ? el("a", { class: "album", href: m.link, target: "_blank", rel: "noopener" }, ...kids)
+        : el("div", { class: "album album-static" }, ...kids));
+    });
     frag.append(grid);
     return frag;
   }
