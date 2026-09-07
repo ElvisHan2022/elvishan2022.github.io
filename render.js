@@ -28,6 +28,13 @@ window.R = (function () {
     return ul;
   }
 
+  function pubStatusClass(status) {
+    const s = (status || "").toLowerCase();
+    if (s.includes("accepted")) return "accepted";
+    if (s.includes("submitted") || s.includes("in review") || s.includes("under review")) return "review";
+    return "progress";
+  }
+
   function renderBlocks(room) {
     const frag = document.createDocumentFragment();
     if (room.intro) frag.append(el("p", { class: "intro" }, room.intro));
@@ -58,13 +65,20 @@ window.R = (function () {
           }
           frag.append(d); break;
         }
+        case "pub-legend": {
+          const leg = el("ul", { class: "pub-legend", "aria-label": "Publication status key" });
+          [["accepted", "Accepted"], ["review", "In review"], ["progress", "In progress"]].forEach(([cls, label]) => {
+            leg.append(el("li", {}, el("span", { class: "pub-status " + cls }, label)));
+          });
+          frag.append(leg); break;
+        }
         case "pub": {
-          const st = (b.status || "").toLowerCase();
-          const cls = st.includes("submitted") ? "sub" : (st.includes("prep") || st.includes("working")) ? "prep" : "";
+          const cls = pubStatusClass(b.status);
           const d = el("div", { class: "pub" },
             el("h4", {}, b.title),
-            el("span", { class: "venue" }, b.venue || ""),
-            el("span", { class: "status " + cls }, b.status || ""));
+            el("div", { class: "pub-meta" },
+              b.venue ? el("span", { class: "venue" }, b.venue) : null,
+              el("span", { class: "pub-status " + cls }, b.status || "")));
           if (b.text) d.append(el("p", {}, b.text));
           if (b.link) d.append(el("a", { class: "more", href: b.link, target: "_blank", rel: "noopener" }, "code ↗"));
           frag.append(d); break;
