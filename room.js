@@ -57,8 +57,20 @@
   function showLabel(h, s) {
     const r = h.getBoundingClientRect(), p = inner.getBoundingClientRect();
     label.innerHTML = `<b>${s.kanji}</b>${s.title}`;
-    label.style.left = (r.left - p.left + r.width / 2) + "px";
-    label.style.top = (r.top - p.top) + "px";
+    label.classList.remove("pos-above", "pos-right-top", "pos-bottom");
+    if (s.id === "books") {
+      label.classList.add("pos-right-top");
+      label.style.left = (r.right - p.left) + "px";
+      label.style.top = (r.top - p.top) + "px";
+    } else if (s.id === "builds") {
+      label.classList.add("pos-bottom");
+      label.style.left = (r.left - p.left + r.width / 2) + "px";
+      label.style.top = (r.bottom - p.top) + "px";
+    } else {
+      label.classList.add("pos-above");
+      label.style.left = (r.left - p.left + r.width / 2) + "px";
+      label.style.top = (r.top - p.top) + "px";
+    }
     label.classList.add("show");
   }
 

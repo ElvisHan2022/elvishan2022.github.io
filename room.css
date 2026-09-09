@@ -207,7 +207,7 @@ html:has(.room-page.fill) { overflow: hidden; height: 100%; }
 .reveal .hs { fill: rgba(var(--hs-color), .06); }
 
 .hs-label {
-  position: absolute; transform: translate(-50%, calc(-100% - 8px)); pointer-events: none;
+  position: absolute; pointer-events: none;
   font-family: var(--f-chrome); font-size: 13px; font-weight: 500; letter-spacing: .01em;
   color: var(--chrome-ink);
   background: linear-gradient(180deg, var(--chrome-bg-lit) 0%, var(--chrome-bg) 100%);
@@ -215,6 +215,9 @@ html:has(.room-page.fill) { overflow: hidden; height: 100%; }
   box-shadow: var(--chrome-shadow);
   padding: 7px 12px; white-space: nowrap; opacity: 0; transition: opacity .15s;
 }
+.hs-label.pos-above { transform: translate(-50%, calc(-100% - 8px)); }
+.hs-label.pos-right-top { transform: translate(8px, 0); }
+.hs-label.pos-bottom { transform: translate(-50%, 8px); }
 .hs-label b { font-family: var(--f-chrome); font-weight: 600; color: var(--seal); margin-right: 8px; font-size: 14px; letter-spacing: .02em; }
 .hs-label.show { opacity: 1; }
 
