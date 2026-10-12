@@ -15,7 +15,7 @@ window.POSTS = {
     // },
   ],
   feeds: [
-    // { label: "LessWrong", url: "https://www.lesswrong.com/users/your-handle" },
-    // { label: "Substack",  url: "https://yourname.substack.com" },
+    // Uncomment and paste your Substack URL; the Writing panel will show it as a button.
+    // { label: "Read on Substack", url: "https://yourname.substack.com" },
   ],
 };

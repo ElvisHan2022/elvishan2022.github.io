@@ -13,10 +13,9 @@
     { id: "about",        kanji: "窓",   title: "About",             sub: "The window. Start here.",                        room: "about" },
     { id: "books",        kanji: "本棚", title: "Bookshelf",         sub: "Everything I have read, with notes where I have them.", view: "books" },
     { id: "research",     kanji: "机",   title: "Research",          sub: "The laptop. What is open right now.",            room: "research" },
-    { id: "publications", kanji: "紙",   title: "Papers on the floor", sub: "Publications, submitted and in preparation.",    room: "publications" },
+    { id: "publications", kanji: "紙",   title: "Papers on the floor", sub: "Publications and abstracts.",    room: "publications" },
     { id: "builds",       kanji: "箱",   title: "Builds",            sub: "The boxes on top of the shelf. Things I made.",   room: "builds" },
-    { id: "beliefs",      kanji: "日記", title: "Things I believe",  sub: "The journal on the desk.",                       room: "beliefs" },
-    { id: "writing",      kanji: "文",   title: "Writing",           sub: "The low shelf. Posts, wherever they live.",        view: "writing" },
+    { id: "writing",      kanji: "文",   title: "Writing",           sub: "The low shelf. Posts on Substack.",        view: "writing" },
     { id: "music",        kanji: "音",   title: "Music",             sub: "CDs and album covers.",                          view: "music" },
     { id: "movies",       kanji: "映",   title: "Movies",            sub: "The projector. Points at the wall you cannot see.", view: "movies" },
     { id: "outdoor",      kanji: "外",   title: "Outside",           sub: "Volleyball, hiking, the gym. A second room, coming.", view: "outdoor" },
@@ -268,7 +267,7 @@
     (b.reads || []).forEach((r, i) => reads.append(el("li", {}, (i === 0 ? "read " : "reread ") + span(r))));
     card.append(reads);
     if (b.rating) card.append(el("p", { class: "rating" }, "★".repeat(b.rating) + "☆".repeat(5 - b.rating)));
-    card.append(b.review ? el("p", { class: "review" }, b.review) : el("p", { class: "review none" }, "No notes yet. I write these slowly."));
+    if (b.review) card.append(el("p", { class: "review" }, b.review));
     card.hidden = false;
     card.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
@@ -311,7 +310,7 @@
     const frag = document.createDocumentFragment();
     const P = window.POSTS || { items: [], feeds: [] };
     if (!P.items.length) {
-      frag.append(el("p", {}, "Nothing published yet. Short posts, reading notes, and arguments I am not sure of will be listed here, each linking out to wherever it was published."));
+      if (!(P.feeds && P.feeds.length)) frag.append(el("p", {}, "Coming soon."));
     } else {
       P.items.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).forEach(x => {
         const d = el("div", { class: "post" },
@@ -323,7 +322,7 @@
       });
     }
     if (P.feeds && P.feeds.length) {
-      frag.append(el("h3", {}, "Where I post"));
+      if (P.items.length) frag.append(el("h3", {}, "Where I post"));
       const ul = el("ul", { class: "feeds" });
       P.feeds.forEach(f => ul.append(el("li", {}, el("a", { href: f.url, target: "_blank", rel: "noopener" }, f.label))));
       frag.append(ul);
@@ -334,7 +333,7 @@
   function renderMovies() {
     const frag = document.createDocumentFragment();
     if (!M.items.length) {
-      frag.append(el("p", {}, "Nothing on the reel yet. Films I have watched, with a line or two each, will be listed here once the list is typed up."));
+      frag.append(el("p", {}, "Coming soon."));
       return frag;
     }
     M.items.forEach(m => frag.append(el("div", { class: "entry" },

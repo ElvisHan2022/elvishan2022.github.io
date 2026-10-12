@@ -97,8 +97,6 @@
   $("#site-name").textContent = S.name;
   $("#site-loc").textContent = S.location;
   $("#site-now").textContent = S.now || "";
-  const beliefsRoom = rooms.find(r => r.beliefs);
-  $("#status-beliefs").textContent = beliefsRoom ? beliefsRoom.beliefs.length : 0;
   $("#status-rooms").textContent = rooms.length;
   $("#status-updated").textContent = new Date(document.lastModified).toLocaleDateString("en-US", { month: "short", year: "numeric" });
 

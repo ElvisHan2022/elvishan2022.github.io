@@ -1,12 +1,12 @@
 # elvishan.dev (working name)
 
-A personal site drawn as a bedroom: a painted room where every object opens a section. The bookshelf opens the reading list, the laptop opens research, the papers on the floor open publications, the boxes on the shelf open builds, the journal opens things I believe, the CD rack opens music, the projector opens movies, the plant opens contact. An older floorplan view lives at `map.html`.
+A personal site drawn as a bedroom: a painted room where every object opens a section. The bookshelf opens the reading list, the laptop opens research, the papers on the floor open publications, the boxes on the shelf open builds, the low shelf opens writing, the CD rack opens music, the projector opens movies, the plant opens contact. An older floorplan view lives at `map.html`.
 
 No framework, no build step. The files:
 
 | file | what it is | edit it when |
 |---|---|---|
-| `content.js` | every word on the site (about, research, publications, builds, beliefs, contact) | you add a belief, a paper, a project, or change the "now" line |
+| `content.js` | every word on the site (about, research, publications, builds, contact) | you add a paper, a project, or change the "now" line |
 | `books.js` | the bookshelf: books, short stories, manga, manhwa, plus the movie list for the projector | you finish a book, write a review, or watch a film |
 | `music.js` | albums for the music panel: titles, artists, cover art, optional links | you add an album to the wall |
 | `posts.js` | writing list behind the low shelf | you publish a post elsewhere |
@@ -69,7 +69,7 @@ Add a legend row at the top of the publications room with `{ type: "pub-legend" 
   text: "" }                             // optional one-line summary
 ```
 
-Beliefs are just strings in the `beliefs` array of the `beliefs` room. Add a line, save, done. The books-on-shelf counter in the bottom-left corner updates itself.
+The books-on-shelf counter in the bottom-left corner updates itself.
 
 The `now` string in `content.js` still drives the "Now" panel; it is no longer shown in a top banner.
 
