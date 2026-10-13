@@ -233,11 +233,10 @@
     [["reading", "reading now"], ["reread", "reread"], ["reviewed", "has notes"]].forEach(([c, t]) => lg.append(el("li", {}, el("i", { class: c }), t)));
     frag.append(lg);
     B.shelves.forEach(sh => {
-      if (!sh.items.length && sh.id !== "stories") return;
+      if (!sh.items.length) return;
       const sec = el("section", { class: "shelf" });
       sec.append(el("h3", {}, `${sh.kanji} ${sh.label}`, el("span", { class: "count" }, ` ${sh.items.length}`)));
       const row = el("div", { class: "spines" });
-      if (!sh.items.length) row.append(el("p", { class: "empty" }, "Nothing shelved here yet."));
       sh.items.forEach(b => {
         const sp = el("button", { type: "button", class: "spine" + (isReading(b) ? " reading" : "") + (b.rereads ? " reread" : "") + (b.review ? " reviewed" : ""),
           style: `--h:${hue(b.title)}; --w:${Math.min(44, Math.max(24, 18 + b.title.length))}px`, title: b.title,
@@ -361,16 +360,50 @@
     return frag;
   }
 
-  /* ---------- mobile stack ---------- */
-  const stack = $("#stack");
-  SPOTS.forEach(s => {
-    const sec = el("section", { id: "s-" + s.id });
-    sec.append(el("h2", {}, el("span", {}, s.kanji), s.title));
+  /* ---------- phone layout: plain single page, same content ---------- */
+  const MOBILE = [
+    ["about", "About"], ["research", "Research"], ["publications", "Papers"], ["builds", "Builds"],
+    ["writing", "Writing"], ["books", "Books"], ["music", "Music"], ["movies", "Movies"],
+    ["outdoor", "Outside"], ["contact", "Contact"],
+  ];
+  const isPhone = () => window.matchMedia("(max-width: 820px)").matches;
+  $("#m-name").textContent = S.name;
+  $("#m-tagline").textContent = S.tagline || "";
+  $("#m-loc").textContent = [S.location, S.now].filter(Boolean).join(" · ");
+  const L = S.links || {}, mLinks = $("#m-links");
+  [["Email", L.email && "mailto:" + L.email], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
+    .filter(([, href]) => href)
+    .forEach(([label, href]) => mLinks.append(el("a", { class: "m-chip", href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label)));
+  const mNav = $("#m-nav"), mSecs = $("#m-sections");
+  MOBILE.forEach(([id, short]) => {
+    const s = byId[id]; if (!s) return;
+    const room = s.room ? roomById[s.room] : null;
+    mNav.append(el("a", { href: "#" + id, "data-m": id, onclick: e => { e.preventDefault(); goMobile(id, true); } }, short));
+    const sec = el("section", { class: "m-card", id: "m-" + id });
+    sec.append(el("h2", { class: "m-title" }, el("span", { class: "m-kanji" }, room ? room.kanji : s.kanji), room ? room.title : s.title));
     const body = el("div", { class: "panel-body" }); body.append(renderSpot(s)); sec.append(body);
-    stack.append(sec);
+    mSecs.append(sec);
   });
+  function goMobile(id, push) {
+    const t = $("#m-" + id); if (!t) return;
+    const navH = mNav.getBoundingClientRect().height;
+    window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - navH - 8, behavior: push ? "smooth" : "auto" });
+    if (push) history.replaceState(null, "", "#" + id);
+  }
+  /* highlight the section in view */
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const id = e.target.id.slice(2);
+      mNav.querySelectorAll("a").forEach(a => {
+        const on = a.dataset.m === id; a.classList.toggle("active", on);
+        if (on && isPhone()) a.scrollIntoView({ block: "nearest", inline: "center" });
+      });
+    }), { rootMargin: "-30% 0px -60% 0px" });
+    mSecs.querySelectorAll(".m-card").forEach(c => io.observe(c));
+  }
 
   /* ---------- deep link ---------- */
   const h = location.hash.replace("#", "");
-  if (h && byId[h]) setTimeout(() => open(h, false), 50);
+  if (h && byId[h]) setTimeout(() => isPhone() ? goMobile(h, false) : open(h, false), 50);
 })();

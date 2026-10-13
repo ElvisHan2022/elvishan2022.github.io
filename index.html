@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elvis Han</title>
-<meta name="description" content="Elvis Han. Health data science, machine learning, a bookshelf, and a running list of things I believe.">
+<meta name="description" content="Elvis Han. Health data science, machine learning evaluation, research, and a bookshelf.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="style.css">
@@ -75,8 +75,7 @@
     <ul>
       <li>The bookshelf is everything I have read. Tap a spine.</li>
       <li>The laptop is current research; the papers on the floor are publications.</li>
-      <li>The journal on the desk is a list of things I believe.</li>
-      <li>Prefer a list? Open the menu tab on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
+            <li>Prefer a list? Open the menu tab on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
     </ul>
   </aside>
 
@@ -107,8 +106,18 @@
   <div class="scrim" id="scrim"></div>
 </main>
 
-<!-- mobile / no-js fallback: everything, stacked -->
-<section class="stack" id="stack" aria-label="All sections"></section>
+<!-- phone layout: a clean single page, built by room.js from the same content -->
+<div class="m-site" id="m-site">
+  <header class="m-hero">
+    <img class="m-hero-img" src="img/home.jpg" alt="" width="2752" height="1536" loading="lazy" decoding="async">
+    <h1 class="m-name" id="m-name"></h1>
+    <p class="m-tagline" id="m-tagline"></p>
+    <p class="m-loc" id="m-loc"></p>
+    <div class="m-links" id="m-links"></div>
+  </header>
+  <nav class="m-nav" id="m-nav" aria-label="Sections"></nav>
+  <div id="m-sections"></div>
+</div>
 
 <footer class="colophon">
   <span>A room instead of a résumé. The <a href="map.html">floorplan</a> still exists if you prefer a map.</span>
