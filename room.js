@@ -360,69 +360,87 @@
     return frag;
   }
 
-  /* ---------- phone layout: clean landing + one tab per section, same content ---------- */
-  /* [spot id, tab label, panel title]; order = chapter order on phones */
+  /* ---------- phone layout (VIZ-style): landing rows + one tab per section, same content ---------- */
+  /* [spot id, tab label, page title]; order = tab order on phones */
   const MOBILE = [
     ["research", "Research", "Research"], ["publications", "Papers", "Publications"],
-    ["about", "About", "About"], ["builds", "Builds", "Builds"],
-    ["writing", "Writing", "Writing"], ["books", "Books", "Bookshelf"],
-    ["music", "Music", "Music"], ["movies", "Movies", "Movies"],
+    ["builds", "Builds", "Builds"], ["books", "Books", "Bookshelf"], ["about", "About", "About"],
+    ["writing", "Writing", "Writing"], ["music", "Music", "Music"], ["movies", "Movies", "Movies"],
     ["outdoor", "Outside", "Outside"], ["contact", "Contact", "Contact"],
   ];
   const mIds = MOBILE.map(m => m[0]);
+  const titleOf = Object.fromEntries(MOBILE.map(m => [m[0], m[2]]));
   const isPhone = () => window.matchMedia("(max-width: 820px)").matches;
   const mSite = $("#m-site");
-  const aboutRoom = roomById.about;
-  const firstP = aboutRoom && (aboutRoom.blocks || []).find(b => b.type === "p");
-  $("#m-eyebrow").textContent = (S.tagline || "").split("|")[0].replace("@", "·").trim() || S.location || "";
+  const blocksOf = id => ((roomById[id] || {}).blocks || []);
+  const initials = (S.name || "").split(/\s+/).map(w => w[0] || "").join("").toUpperCase();
+  $("#m-logo-text").textContent = initials;
   $("#m-name").textContent = S.name;
-  $("#m-back-name").textContent = S.name;
-  $("#m-bio").textContent = firstP ? firstP.text : (S.tagline || "");
-  const L = S.links || {}, mLinks = $("#m-links");
-  [["Email", L.email && "mailto:" + L.email], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
+  $("#m-tagline").textContent = S.tagline || "";
+  const firstP = blocksOf("about").find(b => b.type === "p");
+  $("#m-bio").textContent = firstP ? firstP.text : "";
+  const L = S.links || {};
+  const acts = $("#m-actions");
+  [["Email", L.email && "mailto:" + L.email, true], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
     .filter(([, href]) => href)
-    .forEach(([label, href]) => mLinks.append(el("a", { href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label, el("span", { class: "m-arrow", "aria-hidden": "true" }, "↗"))));
-  $("#m-foot").textContent = [(S.tagline || "").split("|")[1], S.now].filter(Boolean).map(t => t.trim()).join(" · ");
+    .forEach(([label, href, primary]) => acts.append(el("a", { class: "m-btn" + (primary ? " primary" : ""), href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label)));
 
-  /* short counts for the contents panels */
-  const countOf = id => {
-    const room = roomById[id];
-    if (room && room.blocks) {
-      const n = room.blocks.filter(b => b.type === "entry" || b.type === "pub").length;
-      if (n) return n + (id === "publications" ? (n === 1 ? " paper" : " papers") : (n === 1 ? " project" : " projects"));
-      return "";
-    }
-    if (id === "books") return allBooks.length + " on the shelf";
-    if (id === "music") return ((window.MUSIC && window.MUSIC.items) || []).length + " on the wall";
-    if (id === "movies") return M.items.length ? M.items.length + " watched" : "soon";
-    if (id === "writing") { const P = window.POSTS || { items: [] }; return P.items.length ? P.items.length + " posts" : "soon"; }
-    return "";
-  };
-  const FEATURED = ["research", "publications"];
-  const mPanels = $("#m-panels"), mTabs = $("#m-tabs"), mViews = $("#m-views");
-  MOBILE.forEach(([id, short, title], i) => {
+  /* landing rows */
+  const rowHead = (title, id) => el("div", { class: "m-row-head" }, el("h2", {}, title), el("a", { class: "m-see", href: "#" + id }, "See all ›"));
+  const tagFor = (text, red = true) => el("span", { class: "m-tag" + (red ? "" : " quiet") }, text);
+  const listRow = (href, title, meta, tag) => el("li", {}, el("a", { href },
+    el("span", { class: "m-li-title" }, title), meta ? el("span", { class: "m-li-meta" }, meta) : null, tag || null));
+  const rows = $("#m-rows");
+  const ongoing = m => /present/i.test(m || "");
+  function entryRow(id, n) {
+    const items = blocksOf(id).filter(b => b.type === "entry").slice(0, n);
+    if (!items.length) return;
+    const ul = el("ul", { class: "m-list" });
+    items.forEach(e => ul.append(listRow("#" + id, e.title, e.meta, ongoing(e.meta) ? tagFor("Ongoing") : null)));
+    rows.append(el("section", { class: "m-row" }, rowHead(titleOf[id], id), ul));
+  }
+  entryRow("research", 3);
+  const pubs = blocksOf("publications").filter(b => b.type === "pub");
+  if (pubs.length) {
+    const ul = el("ul", { class: "m-list" });
+    pubs.forEach(p => ul.append(listRow("#publications", p.title, p.venue, p.status ? tagFor(p.status.split(",")[0], /accepted/i.test(p.status)) : null)));
+    rows.append(el("section", { class: "m-row" }, rowHead("Publications", "publications"), ul));
+  }
+  entryRow("builds", 3);
+  if (allBooks.length) {
+    const strip = el("div", { class: "m-covers" });
+    allBooks.slice().sort((a, b) => (!!isReading(b) - !!isReading(a))).slice(0, 12).forEach(b => strip.append(el("a", { class: "m-cover", href: "#books" },
+      el("span", { class: "m-cover-art", style: `--h:${hue(b.title)}` }, el("span", {}, b.title)),
+      el("span", { class: "m-cover-title" }, b.title),
+      el("span", { class: "m-cover-sub" }, isReading(b) ? "Reading now" : (b.shelf && b.shelf.label) || ""))));
+    rows.append(el("section", { class: "m-row" }, rowHead("Bookshelf", "books"), strip));
+  }
+  const more = $("#m-more");
+  ["about", "writing", "music", "movies", "outdoor", "contact"].forEach(id => more.append(el("li", {}, el("a", { href: "#" + id }, titleOf[id], el("span", { "aria-hidden": "true" }, "›")))));
+
+  /* tabs + section pages */
+  const mTabs = $("#m-tabs"), mViews = $("#m-views");
+  MOBILE.forEach(([id, short, title]) => {
     const s = byId[id]; if (!s) return;
-    const room = s.room ? roomById[s.room] : null;
-    const kanji = room ? room.kanji : s.kanji;
-    mPanels.append(el("a", { class: "m-panel" + (FEATURED.includes(id) ? " wide" : ""), href: "#" + id },
-      el("span", { class: "m-panel-no" }, String(i + 1).padStart(2, "0")),
-      el("span", { class: "m-panel-kanji", "aria-hidden": "true" }, kanji),
-      el("span", { class: "m-panel-title" }, title),
-      el("span", { class: "m-panel-count" }, countOf(id))));
     mTabs.append(el("a", { href: "#" + id, "data-m": id }, short));
     const view = el("section", { class: "m-view", id: "m-" + id, hidden: "" });
-    view.append(el("header", { class: "m-view-head" },
-      el("p", { class: "m-label" }, "Chapter " + String(i + 1).padStart(2, "0")),
-      el("h2", { class: "m-view-title" }, title),
-      (room && room.subtitle) || s.sub ? el("p", { class: "m-view-sub" }, (room && room.subtitle) || s.sub) : null));
+    view.append(el("h1", { class: "m-view-title" }, title));
     const body = el("div", { class: "panel-body m-body" }); body.append(renderSpot(s)); view.append(body);
     mViews.append(view);
   });
+
+  /* footer */
+  const foot = $("#m-footer");
+  const fl = el("ul", {});
+  [["Email", L.email && "mailto:" + L.email], ["GitHub", L.github], ["LinkedIn", L.linkedin]].filter(([, h]) => h)
+    .forEach(([t, h]) => fl.append(el("li", {}, el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t))));
+  foot.append(fl, el("p", {}, [S.location, S.now].filter(Boolean).join(" · ")), el("p", {}, "© " + new Date().getFullYear() + " " + S.name));
+
   function showMobile(id) {
     const sec = mIds.includes(id) ? id : null;
     mSite.dataset.view = sec || "home";
     $("#m-home").hidden = !!sec;
-    $("#m-sec").hidden = !sec;
+    mViews.hidden = !sec;
     mViews.querySelectorAll(".m-view").forEach(v => { v.hidden = v.id !== "m-" + sec; });
     mTabs.querySelectorAll("a").forEach(a => {
       const on = a.dataset.m === sec; a.classList.toggle("active", on);

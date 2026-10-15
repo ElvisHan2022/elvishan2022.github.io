@@ -106,10 +106,17 @@
   <div class="scrim" id="scrim"></div>
 </main>
 
-<!-- phone layout: a clean landing page plus one tab per section, built by room.js from the same content -->
+<!-- phone layout, modeled on VIZ's mobile site: black top bar, key-art banner, white page,
+     bold headings with "See all", chapter-style lists, a swipeable cover row, dark footer.
+     Built by room.js from the same content. -->
 <div class="m-site" id="m-site" data-view="home">
+  <header class="m-top">
+    <a class="m-logo" href="#" aria-label="Home"><span id="m-logo-text"></span></a>
+    <nav class="m-tabs" id="m-tabs" aria-label="Sections"></nav>
+  </header>
+
   <div class="m-home" id="m-home">
-    <figure class="m-frame m-hero">
+    <div class="m-banner">
       <svg class="m-land" viewBox="0 0 400 230" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A quiet valley with mountains, mist, and pine trees">
         <defs>
           <linearGradient id="m-sky" x1="0" y1="0" x2="0" y2="1">
@@ -137,30 +144,23 @@
           <path d="M96 52 q4 -3 8 0 q4 -3 8 0"/><path d="M118 40 q3 -2 6 0 q3 -2 6 0"/>
         </g>
       </svg>
-    </figure>
-
-    <header class="m-intro">
-      <p class="m-eyebrow" id="m-eyebrow"></p>
-      <h1 class="m-name" id="m-name"></h1>
-      <p class="m-bio" id="m-bio"></p>
-      <nav class="m-links" id="m-links" aria-label="Contact links"></nav>
-    </header>
-
-    <section class="m-contents" aria-labelledby="m-contents-h">
-      <h2 class="m-label" id="m-contents-h">Contents</h2>
-      <div class="m-panels" id="m-panels"></div>
-    </section>
-
-    <footer class="m-foot" id="m-foot"></footer>
-  </div>
-
-  <div class="m-sec" id="m-sec" hidden>
-    <div class="m-bar">
-      <a class="m-back" href="#" id="m-back"><span aria-hidden="true">←</span> <span id="m-back-name"></span></a>
-      <nav class="m-tabs" id="m-tabs" aria-label="Sections"></nav>
     </div>
-    <div id="m-views"></div>
+    <section class="m-intro">
+      <h1 class="m-name" id="m-name"></h1>
+      <p class="m-tagline" id="m-tagline"></p>
+      <p class="m-bio" id="m-bio"></p>
+      <div class="m-actions" id="m-actions"></div>
+    </section>
+    <div id="m-rows"></div>
+    <section class="m-row">
+      <div class="m-row-head"><h2>More</h2></div>
+      <ul class="m-more" id="m-more"></ul>
+    </section>
   </div>
+
+  <div id="m-views" hidden></div>
+
+  <footer class="m-footer" id="m-footer"></footer>
 </div>
 </div>
 
