@@ -106,17 +106,62 @@
   <div class="scrim" id="scrim"></div>
 </main>
 
-<!-- phone layout: a clean single page, built by room.js from the same content -->
-<div class="m-site" id="m-site">
-  <header class="m-hero">
-    <img class="m-hero-img" src="img/home.jpg" alt="" width="2752" height="1536" loading="lazy" decoding="async">
-    <h1 class="m-name" id="m-name"></h1>
-    <p class="m-tagline" id="m-tagline"></p>
-    <p class="m-loc" id="m-loc"></p>
-    <div class="m-links" id="m-links"></div>
-  </header>
-  <nav class="m-nav" id="m-nav" aria-label="Sections"></nav>
-  <div id="m-sections"></div>
+<!-- phone layout: a clean landing page plus one tab per section, built by room.js from the same content -->
+<div class="m-site" id="m-site" data-view="home">
+  <div class="m-home" id="m-home">
+    <figure class="m-frame m-hero">
+      <svg class="m-land" viewBox="0 0 400 230" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A quiet valley with mountains, mist, and pine trees">
+        <defs>
+          <linearGradient id="m-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#cfdde3"/><stop offset=".65" stop-color="#eef0ea"/><stop offset="1" stop-color="#f4efe4"/>
+          </linearGradient>
+          <linearGradient id="m-mist" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f6f3ec" stop-opacity="0"/><stop offset=".5" stop-color="#f6f3ec" stop-opacity=".85"/><stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="230" fill="url(#m-sky)"/>
+        <circle cx="300" cy="62" r="20" fill="#fbf6ea" opacity=".9"/>
+        <path d="M0 132 L48 96 L82 116 L136 70 L176 104 L214 82 L262 116 L312 88 L360 112 L400 96 L400 160 L0 160Z" fill="#b9c8cd"/>
+        <path d="M136 70 L148 80 L141 79 L130 76Z M312 88 L322 96 L314 95 L304 94Z" fill="#f4f1ea" opacity=".9"/>
+        <rect y="112" width="400" height="44" fill="url(#m-mist)"/>
+        <path d="M0 150 Q60 126 120 142 T240 136 T400 140 L400 180 L0 180Z" fill="#a3b39b"/>
+        <rect y="140" width="400" height="26" fill="url(#m-mist)" opacity=".7"/>
+        <path d="M0 176 Q90 156 190 170 T400 164 L400 230 L0 230Z" fill="#8c9d7c"/>
+        <path d="M0 200 Q120 186 230 198 T400 194 L400 230 L0 230Z" fill="#7a8b69"/>
+        <path d="M210 230 Q222 206 246 196" stroke="#e9e2d1" stroke-width="3" fill="none" opacity=".7"/>
+        <g fill="#56664f">
+          <path d="M34 196 L44 160 L54 196Z"/><path d="M50 198 L58 170 L66 198Z"/><path d="M22 200 L29 176 L36 200Z"/>
+          <path d="M330 190 L341 150 L352 190Z"/><path d="M350 194 L358 166 L366 194Z"/><path d="M316 196 L323 172 L330 196Z"/><path d="M370 196 L377 176 L384 196Z"/>
+        </g>
+        <g stroke="#6d7a72" stroke-width="1.1" fill="none" opacity=".55">
+          <path d="M96 52 q4 -3 8 0 q4 -3 8 0"/><path d="M118 40 q3 -2 6 0 q3 -2 6 0"/>
+        </g>
+      </svg>
+    </figure>
+
+    <header class="m-intro">
+      <p class="m-eyebrow" id="m-eyebrow"></p>
+      <h1 class="m-name" id="m-name"></h1>
+      <p class="m-bio" id="m-bio"></p>
+      <nav class="m-links" id="m-links" aria-label="Contact links"></nav>
+    </header>
+
+    <section class="m-contents" aria-labelledby="m-contents-h">
+      <h2 class="m-label" id="m-contents-h">Contents</h2>
+      <div class="m-panels" id="m-panels"></div>
+    </section>
+
+    <footer class="m-foot" id="m-foot"></footer>
+  </div>
+
+  <div class="m-sec" id="m-sec" hidden>
+    <div class="m-bar">
+      <a class="m-back" href="#" id="m-back"><span aria-hidden="true">←</span> <span id="m-back-name"></span></a>
+      <nav class="m-tabs" id="m-tabs" aria-label="Sections"></nav>
+    </div>
+    <div id="m-views"></div>
+  </div>
+</div>
 </div>
 
 <footer class="colophon">

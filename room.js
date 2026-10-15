@@ -360,50 +360,80 @@
     return frag;
   }
 
-  /* ---------- phone layout: plain single page, same content ---------- */
+  /* ---------- phone layout: clean landing + one tab per section, same content ---------- */
+  /* [spot id, tab label, panel title]; order = chapter order on phones */
   const MOBILE = [
-    ["about", "About"], ["research", "Research"], ["publications", "Papers"], ["builds", "Builds"],
-    ["writing", "Writing"], ["books", "Books"], ["music", "Music"], ["movies", "Movies"],
-    ["outdoor", "Outside"], ["contact", "Contact"],
+    ["research", "Research", "Research"], ["publications", "Papers", "Publications"],
+    ["about", "About", "About"], ["builds", "Builds", "Builds"],
+    ["writing", "Writing", "Writing"], ["books", "Books", "Bookshelf"],
+    ["music", "Music", "Music"], ["movies", "Movies", "Movies"],
+    ["outdoor", "Outside", "Outside"], ["contact", "Contact", "Contact"],
   ];
+  const mIds = MOBILE.map(m => m[0]);
   const isPhone = () => window.matchMedia("(max-width: 820px)").matches;
+  const mSite = $("#m-site");
+  const aboutRoom = roomById.about;
+  const firstP = aboutRoom && (aboutRoom.blocks || []).find(b => b.type === "p");
+  $("#m-eyebrow").textContent = (S.tagline || "").split("|")[0].replace("@", "·").trim() || S.location || "";
   $("#m-name").textContent = S.name;
-  $("#m-tagline").textContent = S.tagline || "";
-  $("#m-loc").textContent = [S.location, S.now].filter(Boolean).join(" · ");
+  $("#m-back-name").textContent = S.name;
+  $("#m-bio").textContent = firstP ? firstP.text : (S.tagline || "");
   const L = S.links || {}, mLinks = $("#m-links");
   [["Email", L.email && "mailto:" + L.email], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
     .filter(([, href]) => href)
-    .forEach(([label, href]) => mLinks.append(el("a", { class: "m-chip", href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label)));
-  const mNav = $("#m-nav"), mSecs = $("#m-sections");
-  MOBILE.forEach(([id, short]) => {
+    .forEach(([label, href]) => mLinks.append(el("a", { href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label, el("span", { class: "m-arrow", "aria-hidden": "true" }, "↗"))));
+  $("#m-foot").textContent = [(S.tagline || "").split("|")[1], S.now].filter(Boolean).map(t => t.trim()).join(" · ");
+
+  /* short counts for the contents panels */
+  const countOf = id => {
+    const room = roomById[id];
+    if (room && room.blocks) {
+      const n = room.blocks.filter(b => b.type === "entry" || b.type === "pub").length;
+      if (n) return n + (id === "publications" ? (n === 1 ? " paper" : " papers") : (n === 1 ? " project" : " projects"));
+      return "";
+    }
+    if (id === "books") return allBooks.length + " on the shelf";
+    if (id === "music") return ((window.MUSIC && window.MUSIC.items) || []).length + " on the wall";
+    if (id === "movies") return M.items.length ? M.items.length + " watched" : "soon";
+    if (id === "writing") { const P = window.POSTS || { items: [] }; return P.items.length ? P.items.length + " posts" : "soon"; }
+    return "";
+  };
+  const FEATURED = ["research", "publications"];
+  const mPanels = $("#m-panels"), mTabs = $("#m-tabs"), mViews = $("#m-views");
+  MOBILE.forEach(([id, short, title], i) => {
     const s = byId[id]; if (!s) return;
     const room = s.room ? roomById[s.room] : null;
-    mNav.append(el("a", { href: "#" + id, "data-m": id, onclick: e => { e.preventDefault(); goMobile(id, true); } }, short));
-    const sec = el("section", { class: "m-card", id: "m-" + id });
-    sec.append(el("h2", { class: "m-title" }, el("span", { class: "m-kanji" }, room ? room.kanji : s.kanji), room ? room.title : s.title));
-    const body = el("div", { class: "panel-body" }); body.append(renderSpot(s)); sec.append(body);
-    mSecs.append(sec);
+    const kanji = room ? room.kanji : s.kanji;
+    mPanels.append(el("a", { class: "m-panel" + (FEATURED.includes(id) ? " wide" : ""), href: "#" + id },
+      el("span", { class: "m-panel-no" }, String(i + 1).padStart(2, "0")),
+      el("span", { class: "m-panel-kanji", "aria-hidden": "true" }, kanji),
+      el("span", { class: "m-panel-title" }, title),
+      el("span", { class: "m-panel-count" }, countOf(id))));
+    mTabs.append(el("a", { href: "#" + id, "data-m": id }, short));
+    const view = el("section", { class: "m-view", id: "m-" + id, hidden: "" });
+    view.append(el("header", { class: "m-view-head" },
+      el("p", { class: "m-label" }, "Chapter " + String(i + 1).padStart(2, "0")),
+      el("h2", { class: "m-view-title" }, title),
+      (room && room.subtitle) || s.sub ? el("p", { class: "m-view-sub" }, (room && room.subtitle) || s.sub) : null));
+    const body = el("div", { class: "panel-body m-body" }); body.append(renderSpot(s)); view.append(body);
+    mViews.append(view);
   });
-  function goMobile(id, push) {
-    const t = $("#m-" + id); if (!t) return;
-    const navH = mNav.getBoundingClientRect().height;
-    window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - navH - 8, behavior: push ? "smooth" : "auto" });
-    if (push) history.replaceState(null, "", "#" + id);
+  function showMobile(id) {
+    const sec = mIds.includes(id) ? id : null;
+    mSite.dataset.view = sec || "home";
+    $("#m-home").hidden = !!sec;
+    $("#m-sec").hidden = !sec;
+    mViews.querySelectorAll(".m-view").forEach(v => { v.hidden = v.id !== "m-" + sec; });
+    mTabs.querySelectorAll("a").forEach(a => {
+      const on = a.dataset.m === sec; a.classList.toggle("active", on);
+      if (on) a.scrollIntoView({ block: "nearest", inline: "center" });
+    });
+    window.scrollTo(0, 0);
   }
-  /* highlight the section in view */
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(es => es.forEach(e => {
-      if (!e.isIntersecting) return;
-      const id = e.target.id.slice(2);
-      mNav.querySelectorAll("a").forEach(a => {
-        const on = a.dataset.m === id; a.classList.toggle("active", on);
-        if (on && isPhone()) a.scrollIntoView({ block: "nearest", inline: "center" });
-      });
-    }), { rootMargin: "-30% 0px -60% 0px" });
-    mSecs.querySelectorAll(".m-card").forEach(c => io.observe(c));
-  }
+  window.addEventListener("hashchange", () => { if (isPhone()) showMobile(location.hash.slice(1)); });
+  if (isPhone()) showMobile(location.hash.slice(1));
 
   /* ---------- deep link ---------- */
   const h = location.hash.replace("#", "");
-  if (h && byId[h]) setTimeout(() => isPhone() ? goMobile(h, false) : open(h, false), 50);
+  if (h && byId[h] && !isPhone()) setTimeout(() => open(h, false), 50);
 })();
