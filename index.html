@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elvis Han</title>
-<meta name="description" content="Elvis Han. Health data science, machine learning, a bookshelf, and a running list of things I believe.">
+<meta name="description" content="Elvis Han. Health data science, machine learning evaluation, research, and a bookshelf.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="style.css">
@@ -58,7 +58,6 @@
           <rect class="hs" data-spot="writing" x="936" y="626" width="190" height="228" rx="6"/>
           <rect class="hs" data-spot="about"   x="1300" y="150" width="480" height="490" rx="6"/>
           <rect class="hs" data-spot="contact" x="1660" y="480" width="135" height="180" rx="6"/>
-          <rect class="hs" data-spot="beliefs" x="1172" y="688" width="160" height="80"  rx="6"/>
           <rect class="hs" data-spot="research" x="1348" y="638" width="155" height="125" rx="6"/>
           <rect class="hs" data-spot="publications" x="738" y="948" width="340" height="120" rx="6"/>
           <rect class="hs" data-spot="outdoor" x="1658" y="808" width="175" height="185" rx="6"/>
@@ -76,8 +75,7 @@
     <ul>
       <li>The bookshelf is everything I have read. Tap a spine.</li>
       <li>The laptop is current research; the papers on the floor are publications.</li>
-      <li>The journal on the desk is a list of things I believe.</li>
-      <li>Prefer a list? Open the menu tab on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
+            <li>Prefer a list? Open the menu tab on the left. "Show objects" outlines everything clickable. Escape or the Back button closes a panel; arrow keys move between objects.</li>
     </ul>
   </aside>
 
@@ -108,8 +106,63 @@
   <div class="scrim" id="scrim"></div>
 </main>
 
-<!-- mobile / no-js fallback: everything, stacked -->
-<section class="stack" id="stack" aria-label="All sections"></section>
+<!-- phone layout, modeled on VIZ's mobile site: black top bar, key-art banner, white page,
+     bold headings with "See all", chapter-style lists, a swipeable cover row, dark footer.
+     Built by room.js from the same content. -->
+<div class="m-site" id="m-site" data-view="home">
+  <header class="m-top">
+    <a class="m-logo" href="#" aria-label="Home"><span id="m-logo-text"></span></a>
+    <nav class="m-tabs" id="m-tabs" aria-label="Sections"></nav>
+  </header>
+
+  <div class="m-home" id="m-home">
+    <div class="m-banner">
+      <svg class="m-land" viewBox="0 0 400 230" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A quiet valley with mountains, mist, and pine trees">
+        <defs>
+          <linearGradient id="m-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#cfdde3"/><stop offset=".65" stop-color="#eef0ea"/><stop offset="1" stop-color="#f4efe4"/>
+          </linearGradient>
+          <linearGradient id="m-mist" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f6f3ec" stop-opacity="0"/><stop offset=".5" stop-color="#f6f3ec" stop-opacity=".85"/><stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="230" fill="url(#m-sky)"/>
+        <circle cx="300" cy="62" r="20" fill="#fbf6ea" opacity=".9"/>
+        <path d="M0 132 L48 96 L82 116 L136 70 L176 104 L214 82 L262 116 L312 88 L360 112 L400 96 L400 160 L0 160Z" fill="#b9c8cd"/>
+        <path d="M136 70 L148 80 L141 79 L130 76Z M312 88 L322 96 L314 95 L304 94Z" fill="#f4f1ea" opacity=".9"/>
+        <rect y="112" width="400" height="44" fill="url(#m-mist)"/>
+        <path d="M0 150 Q60 126 120 142 T240 136 T400 140 L400 180 L0 180Z" fill="#a3b39b"/>
+        <rect y="140" width="400" height="26" fill="url(#m-mist)" opacity=".7"/>
+        <path d="M0 176 Q90 156 190 170 T400 164 L400 230 L0 230Z" fill="#8c9d7c"/>
+        <path d="M0 200 Q120 186 230 198 T400 194 L400 230 L0 230Z" fill="#7a8b69"/>
+        <path d="M210 230 Q222 206 246 196" stroke="#e9e2d1" stroke-width="3" fill="none" opacity=".7"/>
+        <g fill="#56664f">
+          <path d="M34 196 L44 160 L54 196Z"/><path d="M50 198 L58 170 L66 198Z"/><path d="M22 200 L29 176 L36 200Z"/>
+          <path d="M330 190 L341 150 L352 190Z"/><path d="M350 194 L358 166 L366 194Z"/><path d="M316 196 L323 172 L330 196Z"/><path d="M370 196 L377 176 L384 196Z"/>
+        </g>
+        <g stroke="#6d7a72" stroke-width="1.1" fill="none" opacity=".55">
+          <path d="M96 52 q4 -3 8 0 q4 -3 8 0"/><path d="M118 40 q3 -2 6 0 q3 -2 6 0"/>
+        </g>
+      </svg>
+    </div>
+    <section class="m-intro">
+      <h1 class="m-name" id="m-name"></h1>
+      <p class="m-tagline" id="m-tagline"></p>
+      <p class="m-bio" id="m-bio"></p>
+      <div class="m-actions" id="m-actions"></div>
+    </section>
+    <div id="m-rows"></div>
+    <section class="m-row">
+      <div class="m-row-head"><h2>More</h2></div>
+      <ul class="m-more" id="m-more"></ul>
+    </section>
+  </div>
+
+  <div id="m-views" hidden></div>
+
+  <footer class="m-footer" id="m-footer"></footer>
+</div>
+</div>
 
 <footer class="colophon">
   <span>A room instead of a résumé. The <a href="map.html">floorplan</a> still exists if you prefer a map.</span>

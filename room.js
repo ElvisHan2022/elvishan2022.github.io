@@ -13,10 +13,9 @@
     { id: "about",        kanji: "窓",   title: "About",             sub: "The window. Start here.",                        room: "about" },
     { id: "books",        kanji: "本棚", title: "Bookshelf",         sub: "Everything I have read, with notes where I have them.", view: "books" },
     { id: "research",     kanji: "机",   title: "Research",          sub: "The laptop. What is open right now.",            room: "research" },
-    { id: "publications", kanji: "紙",   title: "Papers on the floor", sub: "Publications, submitted and in preparation.",    room: "publications" },
+    { id: "publications", kanji: "紙",   title: "Papers on the floor", sub: "Publications and abstracts.",    room: "publications" },
     { id: "builds",       kanji: "箱",   title: "Builds",            sub: "The boxes on top of the shelf. Things I made.",   room: "builds" },
-    { id: "beliefs",      kanji: "日記", title: "Things I believe",  sub: "The journal on the desk.",                       room: "beliefs" },
-    { id: "writing",      kanji: "文",   title: "Writing",           sub: "The low shelf. Posts, wherever they live.",        view: "writing" },
+    { id: "writing",      kanji: "文",   title: "Writing",           sub: "The low shelf. Posts on Substack.",        view: "writing" },
     { id: "music",        kanji: "音",   title: "Music",             sub: "CDs and album covers.",                          view: "music" },
     { id: "movies",       kanji: "映",   title: "Movies",            sub: "The projector. Points at the wall you cannot see.", view: "movies" },
     { id: "outdoor",      kanji: "外",   title: "Outside",           sub: "Volleyball, hiking, the gym. A second room, coming.", view: "outdoor" },
@@ -234,11 +233,10 @@
     [["reading", "reading now"], ["reread", "reread"], ["reviewed", "has notes"]].forEach(([c, t]) => lg.append(el("li", {}, el("i", { class: c }), t)));
     frag.append(lg);
     B.shelves.forEach(sh => {
-      if (!sh.items.length && sh.id !== "stories") return;
+      if (!sh.items.length) return;
       const sec = el("section", { class: "shelf" });
       sec.append(el("h3", {}, `${sh.kanji} ${sh.label}`, el("span", { class: "count" }, ` ${sh.items.length}`)));
       const row = el("div", { class: "spines" });
-      if (!sh.items.length) row.append(el("p", { class: "empty" }, "Nothing shelved here yet."));
       sh.items.forEach(b => {
         const sp = el("button", { type: "button", class: "spine" + (isReading(b) ? " reading" : "") + (b.rereads ? " reread" : "") + (b.review ? " reviewed" : ""),
           style: `--h:${hue(b.title)}; --w:${Math.min(44, Math.max(24, 18 + b.title.length))}px`, title: b.title,
@@ -268,7 +266,7 @@
     (b.reads || []).forEach((r, i) => reads.append(el("li", {}, (i === 0 ? "read " : "reread ") + span(r))));
     card.append(reads);
     if (b.rating) card.append(el("p", { class: "rating" }, "★".repeat(b.rating) + "☆".repeat(5 - b.rating)));
-    card.append(b.review ? el("p", { class: "review" }, b.review) : el("p", { class: "review none" }, "No notes yet. I write these slowly."));
+    if (b.review) card.append(el("p", { class: "review" }, b.review));
     card.hidden = false;
     card.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
@@ -311,7 +309,7 @@
     const frag = document.createDocumentFragment();
     const P = window.POSTS || { items: [], feeds: [] };
     if (!P.items.length) {
-      frag.append(el("p", {}, "Nothing published yet. Short posts, reading notes, and arguments I am not sure of will be listed here, each linking out to wherever it was published."));
+      if (!(P.feeds && P.feeds.length)) frag.append(el("p", {}, "Coming soon."));
     } else {
       P.items.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).forEach(x => {
         const d = el("div", { class: "post" },
@@ -323,7 +321,7 @@
       });
     }
     if (P.feeds && P.feeds.length) {
-      frag.append(el("h3", {}, "Where I post"));
+      if (P.items.length) frag.append(el("h3", {}, "Where I post"));
       const ul = el("ul", { class: "feeds" });
       P.feeds.forEach(f => ul.append(el("li", {}, el("a", { href: f.url, target: "_blank", rel: "noopener" }, f.label))));
       frag.append(ul);
@@ -334,7 +332,7 @@
   function renderMovies() {
     const frag = document.createDocumentFragment();
     if (!M.items.length) {
-      frag.append(el("p", {}, "Nothing on the reel yet. Films I have watched, with a line or two each, will be listed here once the list is typed up."));
+      frag.append(el("p", {}, "Coming soon."));
       return frag;
     }
     M.items.forEach(m => frag.append(el("div", { class: "entry" },
@@ -362,16 +360,98 @@
     return frag;
   }
 
-  /* ---------- mobile stack ---------- */
-  const stack = $("#stack");
-  SPOTS.forEach(s => {
-    const sec = el("section", { id: "s-" + s.id });
-    sec.append(el("h2", {}, el("span", {}, s.kanji), s.title));
-    const body = el("div", { class: "panel-body" }); body.append(renderSpot(s)); sec.append(body);
-    stack.append(sec);
+  /* ---------- phone layout (VIZ-style): landing rows + one tab per section, same content ---------- */
+  /* [spot id, tab label, page title]; order = tab order on phones */
+  const MOBILE = [
+    ["research", "Research", "Research"], ["publications", "Papers", "Publications"],
+    ["builds", "Builds", "Builds"], ["books", "Books", "Bookshelf"], ["about", "About", "About"],
+    ["writing", "Writing", "Writing"], ["music", "Music", "Music"], ["movies", "Movies", "Movies"],
+    ["outdoor", "Outside", "Outside"], ["contact", "Contact", "Contact"],
+  ];
+  const mIds = MOBILE.map(m => m[0]);
+  const titleOf = Object.fromEntries(MOBILE.map(m => [m[0], m[2]]));
+  const isPhone = () => window.matchMedia("(max-width: 820px)").matches;
+  const mSite = $("#m-site");
+  const blocksOf = id => ((roomById[id] || {}).blocks || []);
+  const initials = (S.name || "").split(/\s+/).map(w => w[0] || "").join("").toUpperCase();
+  $("#m-logo-text").textContent = initials;
+  $("#m-name").textContent = S.name;
+  $("#m-tagline").textContent = S.tagline || "";
+  const firstP = blocksOf("about").find(b => b.type === "p");
+  $("#m-bio").textContent = firstP ? firstP.text : "";
+  const L = S.links || {};
+  const acts = $("#m-actions");
+  [["Email", L.email && "mailto:" + L.email, true], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
+    .filter(([, href]) => href)
+    .forEach(([label, href, primary]) => acts.append(el("a", { class: "m-btn" + (primary ? " primary" : ""), href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label)));
+
+  /* landing rows */
+  const rowHead = (title, id) => el("div", { class: "m-row-head" }, el("h2", {}, title), el("a", { class: "m-see", href: "#" + id }, "See all ›"));
+  const tagFor = (text, red = true) => el("span", { class: "m-tag" + (red ? "" : " quiet") }, text);
+  const listRow = (href, title, meta, tag) => el("li", {}, el("a", { href },
+    el("span", { class: "m-li-title" }, title), meta ? el("span", { class: "m-li-meta" }, meta) : null, tag || null));
+  const rows = $("#m-rows");
+  const ongoing = m => /present/i.test(m || "");
+  function entryRow(id, n) {
+    const items = blocksOf(id).filter(b => b.type === "entry").slice(0, n);
+    if (!items.length) return;
+    const ul = el("ul", { class: "m-list" });
+    items.forEach(e => ul.append(listRow("#" + id, e.title, e.meta, ongoing(e.meta) ? tagFor("Ongoing") : null)));
+    rows.append(el("section", { class: "m-row" }, rowHead(titleOf[id], id), ul));
+  }
+  entryRow("research", 3);
+  const pubs = blocksOf("publications").filter(b => b.type === "pub");
+  if (pubs.length) {
+    const ul = el("ul", { class: "m-list" });
+    pubs.forEach(p => ul.append(listRow("#publications", p.title, p.venue, p.status ? tagFor(p.status.split(",")[0], /accepted/i.test(p.status)) : null)));
+    rows.append(el("section", { class: "m-row" }, rowHead("Publications", "publications"), ul));
+  }
+  entryRow("builds", 3);
+  if (allBooks.length) {
+    const strip = el("div", { class: "m-covers" });
+    allBooks.slice().sort((a, b) => (!!isReading(b) - !!isReading(a))).slice(0, 12).forEach(b => strip.append(el("a", { class: "m-cover", href: "#books" },
+      el("span", { class: "m-cover-art", style: `--h:${hue(b.title)}` }, el("span", {}, b.title)),
+      el("span", { class: "m-cover-title" }, b.title),
+      el("span", { class: "m-cover-sub" }, isReading(b) ? "Reading now" : (b.shelf && b.shelf.label) || ""))));
+    rows.append(el("section", { class: "m-row" }, rowHead("Bookshelf", "books"), strip));
+  }
+  const more = $("#m-more");
+  ["about", "writing", "music", "movies", "outdoor", "contact"].forEach(id => more.append(el("li", {}, el("a", { href: "#" + id }, titleOf[id], el("span", { "aria-hidden": "true" }, "›")))));
+
+  /* tabs + section pages */
+  const mTabs = $("#m-tabs"), mViews = $("#m-views");
+  MOBILE.forEach(([id, short, title]) => {
+    const s = byId[id]; if (!s) return;
+    mTabs.append(el("a", { href: "#" + id, "data-m": id }, short));
+    const view = el("section", { class: "m-view", id: "m-" + id, hidden: "" });
+    view.append(el("h1", { class: "m-view-title" }, title));
+    const body = el("div", { class: "panel-body m-body" }); body.append(renderSpot(s)); view.append(body);
+    mViews.append(view);
   });
+
+  /* footer */
+  const foot = $("#m-footer");
+  const fl = el("ul", {});
+  [["Email", L.email && "mailto:" + L.email], ["GitHub", L.github], ["LinkedIn", L.linkedin]].filter(([, h]) => h)
+    .forEach(([t, h]) => fl.append(el("li", {}, el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t))));
+  foot.append(fl, el("p", {}, [S.location, S.now].filter(Boolean).join(" · ")), el("p", {}, "© " + new Date().getFullYear() + " " + S.name));
+
+  function showMobile(id) {
+    const sec = mIds.includes(id) ? id : null;
+    mSite.dataset.view = sec || "home";
+    $("#m-home").hidden = !!sec;
+    mViews.hidden = !sec;
+    mViews.querySelectorAll(".m-view").forEach(v => { v.hidden = v.id !== "m-" + sec; });
+    mTabs.querySelectorAll("a").forEach(a => {
+      const on = a.dataset.m === sec; a.classList.toggle("active", on);
+      if (on) a.scrollIntoView({ block: "nearest", inline: "center" });
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", () => { if (isPhone()) showMobile(location.hash.slice(1)); });
+  if (isPhone()) showMobile(location.hash.slice(1));
 
   /* ---------- deep link ---------- */
   const h = location.hash.replace("#", "");
-  if (h && byId[h]) setTimeout(() => open(h, false), 50);
+  if (h && byId[h] && !isPhone()) setTimeout(() => open(h, false), 50);
 })();
