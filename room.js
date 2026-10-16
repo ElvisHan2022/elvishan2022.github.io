@@ -365,53 +365,64 @@
   const isSimple = () => document.documentElement.classList.contains("simple");
   const blocksOf = id => ((roomById[id] || {}).blocks || []);
   const L = S.links || {};
-  $("#s-logo").textContent = (S.name || "").split(/\s+/).map(w => w[0] || "").join("").toUpperCase();
-  $("#s-name").textContent = S.name;
-  $("#s-tagline").textContent = S.tagline || "";
+  $("#s-logo").textContent = S.name;
+  $("#s-sign").textContent = S.name;
+  /* first About paragraph is the greeting; the name inside it is set in bold */
+  const aboutPs = blocksOf("about").filter(b => b.type === "p").map(b => b.text);
+  /* the greeting up to the end of the sentence with the name is set large, like Vivek's opening line */
   const sAbout = $("#s-about");
-  blocksOf("about").filter(b => b.type === "p").forEach(b => sAbout.append(el("p", {}, b.text)));
-  const sLinks = $("#s-links");
-  [[L.email, L.email && "mailto:" + L.email], [L.email2, L.email2 && "mailto:" + L.email2], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Google Scholar", L.scholar]]
-    .filter(([, h]) => h)
-    .forEach(([t, h], i) => { if (i) sLinks.append(" · "); sLinks.append(el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t)); });
+  if (aboutPs.length) {
+    const first = aboutPs[0], at = first.indexOf(S.name);
+    const cut = at >= 0 ? first.indexOf(".", at + S.name.length) + 1 : 0;
+    const lead = $("#s-lead");
+    if (cut > 0) {
+      lead.append(first.slice(0, at), el("strong", {}, S.name), first.slice(at + S.name.length, cut));
+      const restText = first.slice(cut).trim(); if (restText) sAbout.append(el("p", {}, restText));
+    } else lead.append(first);
+  }
+  aboutPs.slice(1).forEach(t => sAbout.append(el("p", {}, t)));
 
   const sSecs = $("#s-sections");
-  const section = (id, title) => { const sec = el("section", { class: "s-sec", id }); sec.append(el("h2", {}, title)); sSecs.append(sec); return sec; };
+  const section = (id, title) => { const sec = el("section", { class: "s-sec", id }, el("h2", {}, title)); sSecs.append(sec); return sec; };
   const titled = (title, link) => link ? el("a", { href: link, target: "_blank", rel: "noopener" }, title) : title;
-  [["research", "Research"], ["builds", "Builds"]].forEach(([id, title]) => {
+  const entries = (id, title) => {
     const items = blocksOf(id).filter(b => b.type === "entry"); if (!items.length) return;
     const sec = section(id, title);
     items.forEach(e => sec.append(el("article", { class: "s-item" },
       el("h3", {}, titled(e.title, e.link)), e.meta ? el("p", { class: "s-meta" }, e.meta) : null, e.text ? el("p", {}, e.text) : null)));
-  });
+  };
+  entries("research", "Research");
   const pubs = blocksOf("publications").filter(b => b.type === "pub");
   if (pubs.length) {
-    const sec = el("section", { class: "s-sec", id: "publications" }, el("h2", {}, "Publications"));
+    const sec = section("publications", "Publications");
     pubs.forEach(p => sec.append(el("article", { class: "s-item" },
       el("h3", {}, titled(p.title, p.link)),
-      el("p", { class: "s-meta" }, p.venue || "", p.status ? el("span", { class: "s-status" + (/accepted/i.test(p.status) ? " ok" : "") }, p.status) : null),
+      el("p", { class: "s-meta" }, [p.venue, p.status].filter(Boolean).join(" · ")),
       p.text ? el("p", {}, p.text) : null)));
-    sSecs.insertBefore(sec, $("#builds")); /* order: research, publications, builds */
   }
+  entries("builds", "Builds");
   if (reading.length) {
     const sec = section("books", "Reading");
-    sec.append(el("p", {}, reading.map(b => b.title + (b.author ? " (" + b.author + ")" : "")).join(", ") + "."));
-    sec.append(el("p", { class: "s-meta s-roomnote" }, "The full bookshelf, music, and movies are in the ", el("button", { type: "button", class: "s-inline", "data-view": "room" }, "room view"), "."));
+    sec.append(el("p", {}, reading.map(b => b.title + (b.author ? " by " + b.author : "")).join(", ") + "."));
   }
-  $("#s-foot").textContent = [S.location, "© " + new Date().getFullYear() + " " + S.name].filter(Boolean).join(" · ");
+  const contact = section("contact", "Contact");
+  const cl = el("p", { class: "s-links" });
+  [[L.email, L.email && "mailto:" + L.email], [L.email2, L.email2 && "mailto:" + L.email2], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Google Scholar", L.scholar]]
+    .filter(([, h]) => h)
+    .forEach(([t, h], i) => { if (i) cl.append(" · "); cl.append(el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t)); });
+  contact.append(cl);
+  $("#s-foot").textContent = [S.location, new Date().getFullYear()].filter(Boolean).join(" · ");
 
   /* view switch */
   function setView(v) {
     if (isPhone()) v = "simple";
     document.documentElement.classList.toggle("simple", v === "simple");
     try { localStorage.setItem("view", v); } catch (e) {}
-    document.querySelectorAll(".s-switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === v)));
     if (v === "room") { fitScene(); const h = location.hash.slice(1); if (h && byId[h]) open(h, false); }
     else if (current) close(true);
     window.scrollTo(0, 0);
   }
   document.addEventListener("click", e => { const b = e.target.closest("[data-view]"); if (b) { e.preventDefault(); setView(b.dataset.view); } });
-  document.querySelectorAll(".s-switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === (isSimple() ? "simple" : "room"))));
 
   /* ---------- deep link ---------- */
   const h = location.hash.replace("#", "");

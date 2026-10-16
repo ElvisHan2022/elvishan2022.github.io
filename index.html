@@ -117,23 +117,28 @@
 </main>
 
 <!-- simple page: the default view on desktop and the only view on phones.
-     One plain column, built by room.js from content.js. -->
+     Laid out like vivekpanyam.com (name top-left, a few links top-right, a short
+     greeting in large light type), over a forest painting, in Frieren-style serif type.
+     Built by room.js from content.js. -->
 <div class="m-site" id="m-site">
   <div class="s-bg" aria-hidden="true"></div>
   <header class="s-top">
-    <a class="s-logo" href="#top" id="s-logo" aria-label="Top"></a>
-    <div class="s-switch" role="group" aria-label="View">
-      <button type="button" data-view="simple" aria-pressed="true">Simple</button>
-      <button type="button" data-view="room" aria-pressed="false">Room</button>
-    </div>
+    <a class="s-logo" href="#top" id="s-logo"></a>
+    <nav class="s-nav" aria-label="Sections">
+      <a href="#research">Research</a>
+      <a href="#publications">Papers</a>
+      <a href="#contact">Contact</a>
+      <button type="button" class="s-room" data-view="room">Room</button>
+    </nav>
   </header>
   <main class="s-page" id="top">
-    <h1 class="s-name" id="s-name"></h1>
-    <p class="s-tagline" id="s-tagline"></p>
+    <p class="s-lead" id="s-lead"></p>
     <div id="s-about"></div>
-    <p class="s-links" id="s-links"></p>
     <div id="s-sections"></div>
-    <footer class="s-foot" id="s-foot"></footer>
+    <footer class="s-foot">
+      <p class="s-sign" id="s-sign"></p>
+      <p id="s-foot"></p>
+    </footer>
   </main>
 </div>
 
