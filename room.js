@@ -381,7 +381,7 @@
   $("#m-bio").textContent = firstP ? firstP.text : "";
   const L = S.links || {};
   const acts = $("#m-actions");
-  [["Email", L.email && "mailto:" + L.email, true], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
+  [["UCSF email", L.email && "mailto:" + L.email, true], ["Stanford email", L.email2 && "mailto:" + L.email2, true], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
     .filter(([, href]) => href)
     .forEach(([label, href, primary]) => acts.append(el("a", { class: "m-btn" + (primary ? " primary" : ""), href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label)));
 
@@ -432,7 +432,7 @@
   /* footer */
   const foot = $("#m-footer");
   const fl = el("ul", {});
-  [["Email", L.email && "mailto:" + L.email], ["GitHub", L.github], ["LinkedIn", L.linkedin]].filter(([, h]) => h)
+  [[L.email, L.email && "mailto:" + L.email], [L.email2, L.email2 && "mailto:" + L.email2], ["GitHub", L.github], ["LinkedIn", L.linkedin]].filter(([, h]) => h)
     .forEach(([t, h]) => fl.append(el("li", {}, el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t))));
   foot.append(fl, el("p", {}, [S.location, S.now].filter(Boolean).join(" · ")), el("p", {}, "© " + new Date().getFullYear() + " " + S.name));
 

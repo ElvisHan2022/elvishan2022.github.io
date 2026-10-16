@@ -558,7 +558,7 @@ html:has(.room-page.fill) { overflow: hidden; height: 100%; }
 
   /* footer */
   .m-footer { background: var(--m-black); color: #9a9a9a; padding: 24px 16px 32px; font-size: 13px; line-height: 1.5; }
-  .m-footer ul { list-style: none; margin: 0 0 14px; padding: 0; display: flex; gap: 22px; }
+  .m-footer ul { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }
   .m-footer a { color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; }
   .m-footer p { margin: 6px 0 0; }
 }

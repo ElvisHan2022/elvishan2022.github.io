@@ -83,6 +83,7 @@
           const ul = el("ul", { class: "links" });
           const L = S.links || {};
           if (L.email) ul.append(el("li", {}, el("a", { href: "mailto:" + L.email }, el("span", { class: "k" }, "email"), L.email)));
+          if (L.email2) ul.append(el("li", {}, el("a", { href: "mailto:" + L.email2 }, el("span", { class: "k" }, "email"), L.email2)));
           if (L.github) ul.append(el("li", {}, el("a", { href: L.github, target: "_blank", rel: "noopener" }, el("span", { class: "k" }, "github"), L.github.replace(/^https?:\/\//, ""))));
           if (L.linkedin) ul.append(el("li", {}, el("a", { href: L.linkedin, target: "_blank", rel: "noopener" }, el("span", { class: "k" }, "linkedin"), L.linkedin.replace(/^https?:\/\//, ""))));
           if (L.scholar) ul.append(el("li", {}, el("a", { href: L.scholar, target: "_blank", rel: "noopener" }, el("span", { class: "k" }, "scholar"), "google scholar")));

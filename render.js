@@ -22,6 +22,7 @@ window.R = (function () {
     const L = S().links || {};
     const row = (k, href, label) => el("li", {}, el("a", { href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, el("span", { class: "k" }, k), label));
     if (L.email) ul.append(row("email", "mailto:" + L.email, L.email));
+    if (L.email2) ul.append(row("email", "mailto:" + L.email2, L.email2));
     if (L.github) ul.append(row("github", L.github, L.github.replace(/^https?:\/\//, "")));
     if (L.linkedin) ul.append(row("linkedin", L.linkedin, L.linkedin.replace(/^https?:\/\//, "")));
     if (L.scholar) ul.append(row("scholar", L.scholar, "google scholar"));

@@ -10,6 +10,7 @@ window.SITE = {
   location: "San Francisco",
   links: {
     email: "elvis.han@ucsf.edu",
+    email2: "elvish@stanford.edu",
     github: "https://github.com/ElvisHan2022",
     linkedin: "https://www.linkedin.com/in/elvis-han",
   },
