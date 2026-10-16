@@ -360,98 +360,60 @@
     return frag;
   }
 
-  /* ---------- phone layout (VIZ-style): landing rows + one tab per section, same content ---------- */
-  /* [spot id, tab label, page title]; order = tab order on phones */
-  const MOBILE = [
-    ["research", "Research", "Research"], ["publications", "Papers", "Publications"],
-    ["builds", "Builds", "Builds"], ["books", "Books", "Bookshelf"], ["about", "About", "About"],
-    ["writing", "Writing", "Writing"], ["music", "Music", "Music"], ["movies", "Movies", "Movies"],
-    ["outdoor", "Outside", "Outside"], ["contact", "Contact", "Contact"],
-  ];
-  const mIds = MOBILE.map(m => m[0]);
-  const titleOf = Object.fromEntries(MOBILE.map(m => [m[0], m[2]]));
+  /* ---------- simple page (default on desktop, only view on phones) ---------- */
   const isPhone = () => window.matchMedia("(max-width: 820px)").matches;
-  const mSite = $("#m-site");
+  const isSimple = () => document.documentElement.classList.contains("simple");
   const blocksOf = id => ((roomById[id] || {}).blocks || []);
-  const initials = (S.name || "").split(/\s+/).map(w => w[0] || "").join("").toUpperCase();
-  $("#m-logo-text").textContent = initials;
-  $("#m-name").textContent = S.name;
-  $("#m-tagline").textContent = S.tagline || "";
-  const firstP = blocksOf("about").find(b => b.type === "p");
-  $("#m-bio").textContent = firstP ? firstP.text : "";
   const L = S.links || {};
-  const acts = $("#m-actions");
-  [["UCSF email", L.email && "mailto:" + L.email, true], ["Stanford email", L.email2 && "mailto:" + L.email2, true], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Scholar", L.scholar]]
-    .filter(([, href]) => href)
-    .forEach(([label, href, primary]) => acts.append(el("a", { class: "m-btn" + (primary ? " primary" : ""), href, target: href.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, label)));
+  $("#s-logo").textContent = (S.name || "").split(/\s+/).map(w => w[0] || "").join("").toUpperCase();
+  $("#s-name").textContent = S.name;
+  $("#s-tagline").textContent = S.tagline || "";
+  const sAbout = $("#s-about");
+  blocksOf("about").filter(b => b.type === "p").forEach(b => sAbout.append(el("p", {}, b.text)));
+  const sLinks = $("#s-links");
+  [[L.email, L.email && "mailto:" + L.email], [L.email2, L.email2 && "mailto:" + L.email2], ["GitHub", L.github], ["LinkedIn", L.linkedin], ["Google Scholar", L.scholar]]
+    .filter(([, h]) => h)
+    .forEach(([t, h], i) => { if (i) sLinks.append(" · "); sLinks.append(el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t)); });
 
-  /* landing rows */
-  const rowHead = (title, id) => el("div", { class: "m-row-head" }, el("h2", {}, title), el("a", { class: "m-see", href: "#" + id }, "See all ›"));
-  const tagFor = (text, red = true) => el("span", { class: "m-tag" + (red ? "" : " quiet") }, text);
-  const listRow = (href, title, meta, tag) => el("li", {}, el("a", { href },
-    el("span", { class: "m-li-title" }, title), meta ? el("span", { class: "m-li-meta" }, meta) : null, tag || null));
-  const rows = $("#m-rows");
-  const ongoing = m => /present/i.test(m || "");
-  function entryRow(id, n) {
-    const items = blocksOf(id).filter(b => b.type === "entry").slice(0, n);
-    if (!items.length) return;
-    const ul = el("ul", { class: "m-list" });
-    items.forEach(e => ul.append(listRow("#" + id, e.title, e.meta, ongoing(e.meta) ? tagFor("Ongoing") : null)));
-    rows.append(el("section", { class: "m-row" }, rowHead(titleOf[id], id), ul));
-  }
-  entryRow("research", 3);
+  const sSecs = $("#s-sections");
+  const section = (id, title) => { const sec = el("section", { class: "s-sec", id }); sec.append(el("h2", {}, title)); sSecs.append(sec); return sec; };
+  const titled = (title, link) => link ? el("a", { href: link, target: "_blank", rel: "noopener" }, title) : title;
+  [["research", "Research"], ["builds", "Builds"]].forEach(([id, title]) => {
+    const items = blocksOf(id).filter(b => b.type === "entry"); if (!items.length) return;
+    const sec = section(id, title);
+    items.forEach(e => sec.append(el("article", { class: "s-item" },
+      el("h3", {}, titled(e.title, e.link)), e.meta ? el("p", { class: "s-meta" }, e.meta) : null, e.text ? el("p", {}, e.text) : null)));
+  });
   const pubs = blocksOf("publications").filter(b => b.type === "pub");
   if (pubs.length) {
-    const ul = el("ul", { class: "m-list" });
-    pubs.forEach(p => ul.append(listRow("#publications", p.title, p.venue, p.status ? tagFor(p.status.split(",")[0], /accepted/i.test(p.status)) : null)));
-    rows.append(el("section", { class: "m-row" }, rowHead("Publications", "publications"), ul));
+    const sec = el("section", { class: "s-sec", id: "publications" }, el("h2", {}, "Publications"));
+    pubs.forEach(p => sec.append(el("article", { class: "s-item" },
+      el("h3", {}, titled(p.title, p.link)),
+      el("p", { class: "s-meta" }, p.venue || "", p.status ? el("span", { class: "s-status" + (/accepted/i.test(p.status) ? " ok" : "") }, p.status) : null),
+      p.text ? el("p", {}, p.text) : null)));
+    sSecs.insertBefore(sec, $("#builds")); /* order: research, publications, builds */
   }
-  entryRow("builds", 3);
-  if (allBooks.length) {
-    const strip = el("div", { class: "m-covers" });
-    allBooks.slice().sort((a, b) => (!!isReading(b) - !!isReading(a))).slice(0, 12).forEach(b => strip.append(el("a", { class: "m-cover", href: "#books" },
-      el("span", { class: "m-cover-art", style: `--h:${hue(b.title)}` }, el("span", {}, b.title)),
-      el("span", { class: "m-cover-title" }, b.title),
-      el("span", { class: "m-cover-sub" }, isReading(b) ? "Reading now" : (b.shelf && b.shelf.label) || ""))));
-    rows.append(el("section", { class: "m-row" }, rowHead("Bookshelf", "books"), strip));
+  if (reading.length) {
+    const sec = section("books", "Reading");
+    sec.append(el("p", {}, reading.map(b => b.title + (b.author ? " (" + b.author + ")" : "")).join(", ") + "."));
+    sec.append(el("p", { class: "s-meta s-roomnote" }, "The full bookshelf, music, and movies are in the ", el("button", { type: "button", class: "s-inline", "data-view": "room" }, "room view"), "."));
   }
-  const more = $("#m-more");
-  ["about", "writing", "music", "movies", "outdoor", "contact"].forEach(id => more.append(el("li", {}, el("a", { href: "#" + id }, titleOf[id], el("span", { "aria-hidden": "true" }, "›")))));
+  $("#s-foot").textContent = [S.location, "© " + new Date().getFullYear() + " " + S.name].filter(Boolean).join(" · ");
 
-  /* tabs + section pages */
-  const mTabs = $("#m-tabs"), mViews = $("#m-views");
-  MOBILE.forEach(([id, short, title]) => {
-    const s = byId[id]; if (!s) return;
-    mTabs.append(el("a", { href: "#" + id, "data-m": id }, short));
-    const view = el("section", { class: "m-view", id: "m-" + id, hidden: "" });
-    view.append(el("h1", { class: "m-view-title" }, title));
-    const body = el("div", { class: "panel-body m-body" }); body.append(renderSpot(s)); view.append(body);
-    mViews.append(view);
-  });
-
-  /* footer */
-  const foot = $("#m-footer");
-  const fl = el("ul", {});
-  [[L.email, L.email && "mailto:" + L.email], [L.email2, L.email2 && "mailto:" + L.email2], ["GitHub", L.github], ["LinkedIn", L.linkedin]].filter(([, h]) => h)
-    .forEach(([t, h]) => fl.append(el("li", {}, el("a", { href: h, target: h.startsWith("mailto") ? "_self" : "_blank", rel: "noopener" }, t))));
-  foot.append(fl, el("p", {}, [S.location, S.now].filter(Boolean).join(" · ")), el("p", {}, "© " + new Date().getFullYear() + " " + S.name));
-
-  function showMobile(id) {
-    const sec = mIds.includes(id) ? id : null;
-    mSite.dataset.view = sec || "home";
-    $("#m-home").hidden = !!sec;
-    mViews.hidden = !sec;
-    mViews.querySelectorAll(".m-view").forEach(v => { v.hidden = v.id !== "m-" + sec; });
-    mTabs.querySelectorAll("a").forEach(a => {
-      const on = a.dataset.m === sec; a.classList.toggle("active", on);
-      if (on) a.scrollIntoView({ block: "nearest", inline: "center" });
-    });
+  /* view switch */
+  function setView(v) {
+    if (isPhone()) v = "simple";
+    document.documentElement.classList.toggle("simple", v === "simple");
+    try { localStorage.setItem("view", v); } catch (e) {}
+    document.querySelectorAll(".s-switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === v)));
+    if (v === "room") { fitScene(); const h = location.hash.slice(1); if (h && byId[h]) open(h, false); }
+    else if (current) close(true);
     window.scrollTo(0, 0);
   }
-  window.addEventListener("hashchange", () => { if (isPhone()) showMobile(location.hash.slice(1)); });
-  if (isPhone()) showMobile(location.hash.slice(1));
+  document.addEventListener("click", e => { const b = e.target.closest("[data-view]"); if (b) { e.preventDefault(); setView(b.dataset.view); } });
+  document.querySelectorAll(".s-switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === (isSimple() ? "simple" : "room"))));
 
   /* ---------- deep link ---------- */
   const h = location.hash.replace("#", "");
-  if (h && byId[h] && !isPhone()) setTimeout(() => open(h, false), 50);
+  if (h && byId[h] && !isSimple()) setTimeout(() => open(h, false), 50);
 })();

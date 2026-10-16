@@ -9,6 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="room.css">
+<script>
+  /* pick the view before paint: phones and first-time visitors get the simple page */
+  (function () {
+    var v = null, q = location.search.match(/[?&]view=(simple|room)/);
+    try { v = localStorage.getItem("view"); } catch (e) {}
+    if (q) v = q[1];
+    if (v !== "room" || matchMedia("(max-width: 820px)").matches) document.documentElement.classList.add("simple");
+  })();
+</script>
 </head>
 <body class="room-page fill">
 
@@ -19,6 +28,7 @@
     <button class="room-tool" id="reveal-toggle" type="button" aria-pressed="false">show objects</button>
     <button class="room-tool" id="help-toggle" type="button">help</button>
     <a class="room-tool ghost" href="map.html" title="Site map (floorplan)">map</a>
+    <button class="room-tool" type="button" data-view="simple">simple view</button>
   </div>
 
   <!-- directory tab + drawer -->
@@ -106,62 +116,25 @@
   <div class="scrim" id="scrim"></div>
 </main>
 
-<!-- phone layout, modeled on VIZ's mobile site: black top bar, key-art banner, white page,
-     bold headings with "See all", chapter-style lists, a swipeable cover row, dark footer.
-     Built by room.js from the same content. -->
-<div class="m-site" id="m-site" data-view="home">
-  <header class="m-top">
-    <a class="m-logo" href="#" aria-label="Home"><span id="m-logo-text"></span></a>
-    <nav class="m-tabs" id="m-tabs" aria-label="Sections"></nav>
-  </header>
-
-  <div class="m-home" id="m-home">
-    <div class="m-banner">
-      <svg class="m-land" viewBox="0 0 400 230" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A quiet valley with mountains, mist, and pine trees">
-        <defs>
-          <linearGradient id="m-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#cfdde3"/><stop offset=".65" stop-color="#eef0ea"/><stop offset="1" stop-color="#f4efe4"/>
-          </linearGradient>
-          <linearGradient id="m-mist" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#f6f3ec" stop-opacity="0"/><stop offset=".5" stop-color="#f6f3ec" stop-opacity=".85"/><stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="230" fill="url(#m-sky)"/>
-        <circle cx="300" cy="62" r="20" fill="#fbf6ea" opacity=".9"/>
-        <path d="M0 132 L48 96 L82 116 L136 70 L176 104 L214 82 L262 116 L312 88 L360 112 L400 96 L400 160 L0 160Z" fill="#b9c8cd"/>
-        <path d="M136 70 L148 80 L141 79 L130 76Z M312 88 L322 96 L314 95 L304 94Z" fill="#f4f1ea" opacity=".9"/>
-        <rect y="112" width="400" height="44" fill="url(#m-mist)"/>
-        <path d="M0 150 Q60 126 120 142 T240 136 T400 140 L400 180 L0 180Z" fill="#a3b39b"/>
-        <rect y="140" width="400" height="26" fill="url(#m-mist)" opacity=".7"/>
-        <path d="M0 176 Q90 156 190 170 T400 164 L400 230 L0 230Z" fill="#8c9d7c"/>
-        <path d="M0 200 Q120 186 230 198 T400 194 L400 230 L0 230Z" fill="#7a8b69"/>
-        <path d="M210 230 Q222 206 246 196" stroke="#e9e2d1" stroke-width="3" fill="none" opacity=".7"/>
-        <g fill="#56664f">
-          <path d="M34 196 L44 160 L54 196Z"/><path d="M50 198 L58 170 L66 198Z"/><path d="M22 200 L29 176 L36 200Z"/>
-          <path d="M330 190 L341 150 L352 190Z"/><path d="M350 194 L358 166 L366 194Z"/><path d="M316 196 L323 172 L330 196Z"/><path d="M370 196 L377 176 L384 196Z"/>
-        </g>
-        <g stroke="#6d7a72" stroke-width="1.1" fill="none" opacity=".55">
-          <path d="M96 52 q4 -3 8 0 q4 -3 8 0"/><path d="M118 40 q3 -2 6 0 q3 -2 6 0"/>
-        </g>
-      </svg>
+<!-- simple page: the default view on desktop and the only view on phones.
+     One plain column, built by room.js from content.js. -->
+<div class="m-site" id="m-site">
+  <div class="s-bg" aria-hidden="true"></div>
+  <header class="s-top">
+    <a class="s-logo" href="#top" id="s-logo" aria-label="Top"></a>
+    <div class="s-switch" role="group" aria-label="View">
+      <button type="button" data-view="simple" aria-pressed="true">Simple</button>
+      <button type="button" data-view="room" aria-pressed="false">Room</button>
     </div>
-    <section class="m-intro">
-      <h1 class="m-name" id="m-name"></h1>
-      <p class="m-tagline" id="m-tagline"></p>
-      <p class="m-bio" id="m-bio"></p>
-      <div class="m-actions" id="m-actions"></div>
-    </section>
-    <div id="m-rows"></div>
-    <section class="m-row">
-      <div class="m-row-head"><h2>More</h2></div>
-      <ul class="m-more" id="m-more"></ul>
-    </section>
-  </div>
-
-  <div id="m-views" hidden></div>
-
-  <footer class="m-footer" id="m-footer"></footer>
-</div>
+  </header>
+  <main class="s-page" id="top">
+    <h1 class="s-name" id="s-name"></h1>
+    <p class="s-tagline" id="s-tagline"></p>
+    <div id="s-about"></div>
+    <p class="s-links" id="s-links"></p>
+    <div id="s-sections"></div>
+    <footer class="s-foot" id="s-foot"></footer>
+  </main>
 </div>
 
 <footer class="colophon">
